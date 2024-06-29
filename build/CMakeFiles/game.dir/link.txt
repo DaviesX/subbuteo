@@ -1,2 +1,0 @@
-/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/ar qc libgame.a CMakeFiles/game.dir/src/agent_human.cpp.o CMakeFiles/game.dir/src/agent.cpp.o CMakeFiles/game.dir/src/config.cpp.o CMakeFiles/game.dir/src/draw.cpp.o CMakeFiles/game.dir/src/game.cpp.o CMakeFiles/game.dir/src/log.cpp.o CMakeFiles/game.dir/src/match.cpp.o CMakeFiles/game.dir/src/physics.cpp.o
-/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/ranlib libgame.a
