@@ -1,0 +1,56 @@
+[
+{
+  "directory": "/Users/daviswen/subbuteo/build",
+  "command": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ -DBOOST_CONTAINER_DYN_LINK -DBOOST_CONTAINER_NO_LIB -DBOOST_JSON_DYN_LINK -DBOOST_JSON_NO_LIB -DBOOST_PROGRAM_OPTIONS_DYN_LINK -DBOOST_PROGRAM_OPTIONS_NO_LIB -I/Users/daviswen/subbuteo/src -isystem /usr/local/include -fPIC -Ofast -flto=auto -O3 -DNDEBUG -std=gnu++20 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX13.1.sdk -mmacosx-version-min=12.7 -o CMakeFiles/game.dir/src/agent_human.cpp.o -c /Users/daviswen/subbuteo/src/agent_human.cpp",
+  "file": "/Users/daviswen/subbuteo/src/agent_human.cpp",
+  "output": "CMakeFiles/game.dir/src/agent_human.cpp.o"
+},
+{
+  "directory": "/Users/daviswen/subbuteo/build",
+  "command": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ -DBOOST_CONTAINER_DYN_LINK -DBOOST_CONTAINER_NO_LIB -DBOOST_JSON_DYN_LINK -DBOOST_JSON_NO_LIB -DBOOST_PROGRAM_OPTIONS_DYN_LINK -DBOOST_PROGRAM_OPTIONS_NO_LIB -I/Users/daviswen/subbuteo/src -isystem /usr/local/include -fPIC -Ofast -flto=auto -O3 -DNDEBUG -std=gnu++20 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX13.1.sdk -mmacosx-version-min=12.7 -o CMakeFiles/game.dir/src/agent.cpp.o -c /Users/daviswen/subbuteo/src/agent.cpp",
+  "file": "/Users/daviswen/subbuteo/src/agent.cpp",
+  "output": "CMakeFiles/game.dir/src/agent.cpp.o"
+},
+{
+  "directory": "/Users/daviswen/subbuteo/build",
+  "command": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ -DBOOST_CONTAINER_DYN_LINK -DBOOST_CONTAINER_NO_LIB -DBOOST_JSON_DYN_LINK -DBOOST_JSON_NO_LIB -DBOOST_PROGRAM_OPTIONS_DYN_LINK -DBOOST_PROGRAM_OPTIONS_NO_LIB -I/Users/daviswen/subbuteo/src -isystem /usr/local/include -fPIC -Ofast -flto=auto -O3 -DNDEBUG -std=gnu++20 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX13.1.sdk -mmacosx-version-min=12.7 -o CMakeFiles/game.dir/src/config.cpp.o -c /Users/daviswen/subbuteo/src/config.cpp",
+  "file": "/Users/daviswen/subbuteo/src/config.cpp",
+  "output": "CMakeFiles/game.dir/src/config.cpp.o"
+},
+{
+  "directory": "/Users/daviswen/subbuteo/build",
+  "command": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ -DBOOST_CONTAINER_DYN_LINK -DBOOST_CONTAINER_NO_LIB -DBOOST_JSON_DYN_LINK -DBOOST_JSON_NO_LIB -DBOOST_PROGRAM_OPTIONS_DYN_LINK -DBOOST_PROGRAM_OPTIONS_NO_LIB -I/Users/daviswen/subbuteo/src -isystem /usr/local/include -fPIC -Ofast -flto=auto -O3 -DNDEBUG -std=gnu++20 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX13.1.sdk -mmacosx-version-min=12.7 -o CMakeFiles/game.dir/src/draw.cpp.o -c /Users/daviswen/subbuteo/src/draw.cpp",
+  "file": "/Users/daviswen/subbuteo/src/draw.cpp",
+  "output": "CMakeFiles/game.dir/src/draw.cpp.o"
+},
+{
+  "directory": "/Users/daviswen/subbuteo/build",
+  "command": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ -DBOOST_CONTAINER_DYN_LINK -DBOOST_CONTAINER_NO_LIB -DBOOST_JSON_DYN_LINK -DBOOST_JSON_NO_LIB -DBOOST_PROGRAM_OPTIONS_DYN_LINK -DBOOST_PROGRAM_OPTIONS_NO_LIB -I/Users/daviswen/subbuteo/src -isystem /usr/local/include -fPIC -Ofast -flto=auto -O3 -DNDEBUG -std=gnu++20 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX13.1.sdk -mmacosx-version-min=12.7 -o CMakeFiles/game.dir/src/game.cpp.o -c /Users/daviswen/subbuteo/src/game.cpp",
+  "file": "/Users/daviswen/subbuteo/src/game.cpp",
+  "output": "CMakeFiles/game.dir/src/game.cpp.o"
+},
+{
+  "directory": "/Users/daviswen/subbuteo/build",
+  "command": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ -DBOOST_CONTAINER_DYN_LINK -DBOOST_CONTAINER_NO_LIB -DBOOST_JSON_DYN_LINK -DBOOST_JSON_NO_LIB -DBOOST_PROGRAM_OPTIONS_DYN_LINK -DBOOST_PROGRAM_OPTIONS_NO_LIB -I/Users/daviswen/subbuteo/src -isystem /usr/local/include -fPIC -Ofast -flto=auto -O3 -DNDEBUG -std=gnu++20 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX13.1.sdk -mmacosx-version-min=12.7 -o CMakeFiles/game.dir/src/log.cpp.o -c /Users/daviswen/subbuteo/src/log.cpp",
+  "file": "/Users/daviswen/subbuteo/src/log.cpp",
+  "output": "CMakeFiles/game.dir/src/log.cpp.o"
+},
+{
+  "directory": "/Users/daviswen/subbuteo/build",
+  "command": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ -DBOOST_CONTAINER_DYN_LINK -DBOOST_CONTAINER_NO_LIB -DBOOST_JSON_DYN_LINK -DBOOST_JSON_NO_LIB -DBOOST_PROGRAM_OPTIONS_DYN_LINK -DBOOST_PROGRAM_OPTIONS_NO_LIB -I/Users/daviswen/subbuteo/src -isystem /usr/local/include -fPIC -Ofast -flto=auto -O3 -DNDEBUG -std=gnu++20 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX13.1.sdk -mmacosx-version-min=12.7 -o CMakeFiles/game.dir/src/match.cpp.o -c /Users/daviswen/subbuteo/src/match.cpp",
+  "file": "/Users/daviswen/subbuteo/src/match.cpp",
+  "output": "CMakeFiles/game.dir/src/match.cpp.o"
+},
+{
+  "directory": "/Users/daviswen/subbuteo/build",
+  "command": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ -DBOOST_CONTAINER_DYN_LINK -DBOOST_CONTAINER_NO_LIB -DBOOST_JSON_DYN_LINK -DBOOST_JSON_NO_LIB -DBOOST_PROGRAM_OPTIONS_DYN_LINK -DBOOST_PROGRAM_OPTIONS_NO_LIB -I/Users/daviswen/subbuteo/src -isystem /usr/local/include -fPIC -Ofast -flto=auto -O3 -DNDEBUG -std=gnu++20 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX13.1.sdk -mmacosx-version-min=12.7 -o CMakeFiles/game.dir/src/physics.cpp.o -c /Users/daviswen/subbuteo/src/physics.cpp",
+  "file": "/Users/daviswen/subbuteo/src/physics.cpp",
+  "output": "CMakeFiles/game.dir/src/physics.cpp.o"
+},
+{
+  "directory": "/Users/daviswen/subbuteo/build",
+  "command": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ -DBOOST_CONTAINER_DYN_LINK -DBOOST_CONTAINER_NO_LIB -DBOOST_JSON_DYN_LINK -DBOOST_JSON_NO_LIB -DBOOST_PROGRAM_OPTIONS_DYN_LINK -DBOOST_PROGRAM_OPTIONS_NO_LIB -I/Users/daviswen/subbuteo/src -isystem /usr/local/include -fPIC -Ofast -flto=auto -O3 -DNDEBUG -std=gnu++20 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX13.1.sdk -mmacosx-version-min=12.7 -o CMakeFiles/subbuteo.dir/src/game_main.cpp.o -c /Users/daviswen/subbuteo/src/game_main.cpp",
+  "file": "/Users/daviswen/subbuteo/src/game_main.cpp",
+  "output": "CMakeFiles/subbuteo.dir/src/game_main.cpp.o"
+}
+]

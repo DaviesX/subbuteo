@@ -1,0 +1,105 @@
+{
+    "field": {
+        "width": 45.0,
+        "length": 90.0,
+        "friction": 0.1,
+        "file": "soccer_field.jpg"
+    },
+    "goal": {
+        "width": 7.32,
+        "height": 2.44,
+        "file": "goal.jpg"
+    },
+    "launch": {
+        "min_force": 0.0,
+        "max_force": 1.0,
+        "uncertainty_force": 0.1,
+        "uncertainty_angle": 0.2
+    },
+    "goal_keeper": {
+        "radius": 1.75,
+        "density": 1.0,
+        "file": "soccerers.jpg"
+    },
+    "foot_baller": {
+        "radius": 1.0,
+        "density": 1.0,
+        "file": "soccerers.jpg"
+    },
+    "offense_positions": [
+        {
+            "id": 0,
+            "type": "foot_baller",
+            "from_left": 0.25,
+            "from_central": 0.33
+        },
+        {
+            "id": 1,
+            "type": "foot_baller",
+            "from_left": 0.5,
+            "from_central": 0.33
+        },
+        {
+            "id": 2,
+            "type": "foot_baller",
+            "from_left": 0.75,
+            "from_central": 0.33
+        },
+        {
+            "id": 3,
+            "type": "foot_baller",
+            "from_left": 0.33,
+            "from_central": 0.66
+        },
+        {
+            "id": 4,
+            "type": "foot_baller",
+            "from_left": 0.66,
+            "from_central": 0.66
+        },
+        {
+            "id": 5,
+            "type": "goal_keeper",
+            "from_left": 0.5,
+            "from_central": 1.0
+        }
+    ],
+    "defense_positions": [
+        {
+            "id": 0,
+            "type": "foot_baller",
+            "from_left": 0.5,
+            "from_central": 0.25
+        },
+        {
+            "id": 1,
+            "type": "foot_baller",
+            "from_left": 0.33,
+            "from_central": 0.5
+        },
+        {
+            "id": 2,
+            "type": "foot_baller",
+            "from_left": 0.66,
+            "from_central": 0.5
+        },
+        {
+            "id": 3,
+            "type": "foot_baller",
+            "from_left": 0.75,
+            "from_central": 0.4
+        },
+        {
+            "id": 4,
+            "type": "foot_baller",
+            "from_left": 0.75,
+            "from_central": 0.6
+        },
+        {
+            "id": 5,
+            "type": "goal_keeper",
+            "from_left": 0.5,
+            "from_central": 1.0
+        }
+    ]
+}

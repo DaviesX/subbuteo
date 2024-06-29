@@ -1,0 +1,4 @@
+/Users/daviswen/subbuteo/build/CMakeFiles/game.dir
+/Users/daviswen/subbuteo/build/CMakeFiles/subbuteo.dir
+/Users/daviswen/subbuteo/build/CMakeFiles/edit_cache.dir
+/Users/daviswen/subbuteo/build/CMakeFiles/rebuild_cache.dir
