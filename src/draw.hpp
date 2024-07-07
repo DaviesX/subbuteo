@@ -12,6 +12,7 @@ namespace subbuteo {
 struct Drawable {
   ScreenPosition position;
   float rotation;
+  float scale;
   unsigned depth;
   sf::Texture texture;
   std::optional<sf::Texture> selector;
