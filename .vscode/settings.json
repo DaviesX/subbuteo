@@ -90,6 +90,11 @@
         "stop_token": "cpp",
         "thread": "cpp",
         "cinttypes": "cpp",
-        "core": "cpp"
+        "core": "cpp",
+        "cfenv": "cpp",
+        "strstream": "cpp",
+        "text_encoding": "cpp",
+        "any": "cpp",
+        "*.ipp": "cpp"
     }
 }

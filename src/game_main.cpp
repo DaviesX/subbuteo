@@ -1,3 +1,5 @@
+#include <boost/log/attributes.hpp>
+#include <boost/log/core.hpp>
 #include <boost/program_options/option.hpp>
 #include <boost/program_options/options_description.hpp>
 #include <boost/program_options/parsers.hpp>
@@ -16,6 +18,9 @@ char const *kArgPlayer1ModelPath = "player1-model-path";
 } // namespace
 
 int main(int argc, char *argv[]) {
+  boost::log::core::get()->add_global_attribute(
+      "Function", boost::log::attributes::mutable_constant<std::string>(""));
+
   boost::program_options::options_description desc;
   desc.add_options()("help", "produce help message")(
       kArgLogGeneratorMode, boost::program_options::value<bool>(),

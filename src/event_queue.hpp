@@ -11,9 +11,9 @@ template <typename Event> class EventQueue {
 public:
   EventQueue() = default;
 
-  void Push(Event &&event) {
+  void Push(Event const &event) {
     std::unique_lock<std::mutex> lock(mutex_);
-    events_.push(std::move(event));
+    events_.push(event);
     cond_not_empty_.notify_one();
   }
 

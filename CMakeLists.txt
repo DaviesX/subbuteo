@@ -17,7 +17,7 @@ find_package(SFML REQUIRED COMPONENTS
              window)
 
 if(${CMAKE_BUILD_TYPE} STREQUAL Debug)
-    set(CMAKE_CXX_FLAGS "-Wall -Wextra -fPIC -fsanitize=address -Og")
+    set(CMAKE_CXX_FLAGS "-Wall -Wextra -fPIC -fsanitize=address -g")
     set(LINK_FLAGS "-fsanitize=address")
 elseif(${CMAKE_BUILD_TYPE} STREQUAL Release)
     set(CMAKE_CXX_FLAGS "-fPIC -Ofast -flto=auto")
@@ -38,6 +38,7 @@ set(SRCS
     src/physics.cpp)
 set(LIBS
     Boost::json
+    Boost::log
     Boost::program_options
     sfml-audio
     sfml-graphics
