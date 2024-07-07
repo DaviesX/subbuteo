@@ -1,7 +1,25 @@
 #pragma once
 
+#include <SFML/Graphics.hpp>
+#include <optional>
+#include <string>
+#include <unordered_map>
+
+#include "coordinate.hpp"
+
 namespace subbuteo {
 
-void Loop();
+struct Drawable {
+  ScreenPosition position;
+  float rotation;
+  unsigned depth;
+  sf::Texture texture;
+  std::optional<sf::Texture> selector;
+};
 
-} // namespace pocket_champions
+using DrawableId = std::string;
+using Scene = std::unordered_map<DrawableId, Drawable>;
+
+void DrawScene(const Scene &scene, sf::RenderWindow *window);
+
+} // namespace subbuteo

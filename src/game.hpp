@@ -10,38 +10,44 @@
 namespace subbuteo {
 
 class Game {
-  public:
-    enum Player { NONE, PLAYER0, PLAYER1 };
-    enum SoccererType { Baller, GoalKeeper };
-    enum State { ONGOING, PLAYER0_GOAL, PLAYER1_GOAL };
+public:
+  enum Player { NONE, PLAYER0, PLAYER1 };
+  enum SoccererType { Baller, GoalKeeper };
+  enum State { ONGOING, PLAYER0_GOAL, PLAYER1_GOAL };
 
-    using SoccererId = unsigned;
+  using SoccererId = unsigned;
 
-    struct Soccerer {
-        SoccererId id;
-        Player owner;
-        SoccererType type;
-        Eigen::Vector2f position;
-    };
+  struct Soccerer {
+    SoccererId id;
+    Player owner;
+    SoccererType type;
+    Eigen::Vector2f position;
+  };
 
-    struct Ball {
-        Eigen::Vector2f position;
-    };
+  struct Ball {
+    Eigen::Vector2f position;
+  };
 
-    using SoccererIndex = unsigned;
+  struct Move {
+    SoccererId id;
+    float angle;
+    float power;
+  };
 
-    Game(Configuration const *config, std::unique_ptr<PhysicsInterface> &&physics);
-    Game(Game const &other);
+  Game(Configuration const *config,
+       std::unique_ptr<PhysicsInterface> &&physics);
+  Game(Game const &other);
 
-    void Launch(Player player, SoccererId id, float angle, float power);
-    State CurrentState() const;
-    Player CurrentPlayer() const;
-    std::vector<Soccerer> CurrentSoccerers() const;
-    Eigen::Vector2f CurrentBall() const;
+  void Launch(Move const &move);
+  unsigned CurrentRound() const;
+  State CurrentState() const;
+  Player CurrentPlayer() const;
+  std::vector<Soccerer> CurrentSoccerers() const;
+  Eigen::Vector2f CurrentBall() const;
 
-  private:
-    Configuration const *config_;
-    std::unique_ptr<PhysicsInterface> physics_;
+private:
+  Configuration const *config_;
+  std::unique_ptr<PhysicsInterface> physics_;
 };
 
 } // namespace subbuteo

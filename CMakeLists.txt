@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.16)
 
 project(subbuteo)
 
+set(CMAKE_CXX_STANDARD 20)
+
 find_package(Boost REQUIRED COMPONENTS
              json
              log
@@ -13,8 +15,6 @@ find_package(SFML REQUIRED COMPONENTS
              graphics
              system
              window)
-
-set(CMAKE_CXX_STANDARD 20)
 
 if(${CMAKE_BUILD_TYPE} STREQUAL Debug)
     set(CMAKE_CXX_FLAGS "-Wall -Wextra -fPIC -fsanitize=address -Og")
@@ -28,7 +28,10 @@ set(SRCS
     src/agent_human.cpp
     src/agent.cpp
     src/config.cpp
+    src/control.cpp
     src/draw.cpp
+    src/event_queue.cpp
+    src/game_flow.cpp
     src/game.cpp
     src/log.cpp
     src/match.cpp

@@ -1,14 +1,15 @@
 {
+    "version": "202406291344",
     "field": {
         "width": 45.0,
         "length": 90.0,
         "friction": 0.1,
-        "file": "soccer_field.jpg"
+        "file": "soccer_field.png"
     },
     "goal": {
         "width": 7.32,
         "height": 2.44,
-        "file": "goal.jpg"
+        "file": "goal.png"
     },
     "launch": {
         "min_force": 0.0,
@@ -19,12 +20,12 @@
     "goal_keeper": {
         "radius": 1.75,
         "density": 1.0,
-        "file": "soccerers.jpg"
+        "file_glob": "soccerer_*.jpg"
     },
     "foot_baller": {
         "radius": 1.0,
         "density": 1.0,
-        "file": "soccerers.jpg"
+        "file_glob": "soccerer_*.jpg"
     },
     "offense_positions": [
         {

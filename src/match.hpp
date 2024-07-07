@@ -1,12 +1,15 @@
 #pragma once
 
+#include <filesystem>
+#include <optional>
+
 #include "agent.hpp"
 #include "game.hpp"
-#include "log.hpp"
 
 namespace subbuteo {
 
-void RunMatch(AgentInterface const &agent0, AgentInterface const &agent1, Game *game,
-              Logger *logger);
+void RunMatch(AgentInterface const &agent0, AgentInterface const &agent1,
+              std::optional<std::filesystem::path> const &log_file_path,
+              Game *game);
 
 } // namespace subbuteo
