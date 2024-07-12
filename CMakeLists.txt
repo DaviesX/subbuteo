@@ -30,12 +30,13 @@ set(SRCS
     src/config.cpp
     src/control.cpp
     src/draw.cpp
+    src/drawable.cpp
     src/event_queue.cpp
     src/game_flow.cpp
     src/game.cpp
     src/log.cpp
     src/match.cpp
-    src/physics.cpp)
+    src/scene.cpp)
 set(LIBS
     Boost::json
     Boost::log

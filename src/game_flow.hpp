@@ -2,6 +2,7 @@
 
 #include <SFML/Graphics.hpp>
 
+#include "config.hpp"
 #include "control.hpp"
 #include "draw.hpp"
 
@@ -24,8 +25,9 @@ public:
 
 private:
   sf::RenderWindow window_;
-  subbuteo::Scene scene_;
-  subbuteo::ControlQueue control_queue_;
+  Configuration config_;
+  Scene scene_;
+  ControlQueue control_queue_;
 };
 
 class LogGeneratorGameFlow final : public GameFlowInterface {

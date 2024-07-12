@@ -2,6 +2,7 @@
 
 #include <string>
 
+#include "control.hpp"
 #include "game.hpp"
 
 namespace subbuteo {
@@ -11,7 +12,8 @@ public:
   using AgentId = std::string;
 
   AgentId const &Id() const;
-  virtual Game::Move ComputeMove(Game const& game) const = 0;
+  virtual Game::Move ComputeMove(Game const &game,
+                                 ControlQueue *control_queue) const = 0;
 
 private:
   AgentId id_;
