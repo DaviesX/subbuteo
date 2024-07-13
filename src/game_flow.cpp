@@ -12,6 +12,7 @@ namespace {
 unsigned const kWindowWidth = 505u;
 unsigned const kWindowHeight = 672u;
 char const *kWindowTitle = "Subbuteo";
+char const *kResourcePath = "./resource";
 
 } // namespace
 
@@ -19,7 +20,8 @@ GameFlowInterface::GameFlowInterface() = default;
 GameFlowInterface::~GameFlowInterface() = default;
 
 InteractiveGameFlow::InteractiveGameFlow()
-    : window_({kWindowWidth, kWindowHeight}, kWindowTitle) {}
+    : window_({kWindowWidth, kWindowHeight}, kWindowTitle),
+      config_(kResourcePath), scene_(/*visualizable=*/true) {}
 
 InteractiveGameFlow::~InteractiveGameFlow() {
   BOOST_LOG_TRIVIAL(debug) << "InteractiveGameFlow: Releasing resources...";

@@ -9,6 +9,7 @@ find_package(Boost REQUIRED COMPONENTS
              log
              program_options
              unit_test_framework)
+find_package(Box2D REQUIRED)
 find_package(Eigen3 REQUIRED)
 find_package(SFML REQUIRED COMPONENTS
              audio
@@ -41,6 +42,7 @@ set(LIBS
     Boost::json
     Boost::log
     Boost::program_options
+    box2d
     sfml-audio
     sfml-graphics
     sfml-system

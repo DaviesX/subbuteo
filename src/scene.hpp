@@ -1,6 +1,5 @@
 #pragma once
 
-#include <SFML/Graphics.hpp>
 #include <box2d/box2d.h>
 #include <chrono>
 #include <cstdint>
@@ -24,8 +23,8 @@ public:
   Scene(bool visualizable);
   Scene(Scene const &other);
 
-  EntityId AddEntity();
-  Entity GetEntity(EntityId id);
+  EntityId AddEntity(b2Body *body, Drawable &&drawable);
+  Entity const &GetEntity(EntityId id) const;
   std::unordered_map<EntityId, Entity> const &Entities() const;
   void Step();
 

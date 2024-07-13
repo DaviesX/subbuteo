@@ -7,14 +7,12 @@
 #include "agent.hpp"
 #include "config.hpp"
 #include "control.hpp"
-#include "draw.hpp"
 #include "game.hpp"
 
 namespace subbuteo {
 
 struct Match {
   std::shared_ptr<Game> game;
-  Scene *scene;
   ControlQueue *control_queue;
 };
 

@@ -14,12 +14,15 @@ std::vector<Drawable const *> ToSortedDrawables(const Scene &scene) {
   std::vector<Drawable const *> result;
   result.reserve(scene.Entities().size());
   for (auto const &[_, entity] : scene.Entities()) {
+    if (entity.drawable == nullptr) {
+      continue;
+    }
     result.push_back(entity.drawable);
   }
 
   std::sort(
       result.begin(), result.end(),
-      [](Drawable const *a, Drawable const *b) { return a->depth > b->depth; });
+      [](Drawable const *a, Drawable const *b) { return a->layer < b->layer; });
   return result;
 }
 
@@ -33,6 +36,11 @@ void DrawScene(const Scene &scene, sf::RenderWindow *window) {
 
     std::vector<Drawable const *> drawables = ToSortedDrawables(scene);
     for (auto drawable : drawables) {
+      window->draw(drawable->sprite);
+      if (drawable->material != nullptr) {
+        sf::Sprite material = drawable->material->Sprite(drawable->sprite);
+        window->draw(material);
+      }
     }
 
     window->display();

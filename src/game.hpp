@@ -5,7 +5,7 @@
 #include <vector>
 
 #include "config.hpp"
-#include "physics.hpp"
+#include "scene.hpp"
 
 namespace subbuteo {
 
@@ -34,8 +34,7 @@ public:
     float power;
   };
 
-  Game(Configuration const *config,
-       std::unique_ptr<PhysicsInterface> &&physics);
+  Game(Configuration const *config, std::shared_ptr<Scene> const &scene);
   Game(Game const &other);
 
   void Launch(Move const &move);
@@ -46,8 +45,7 @@ public:
   Eigen::Vector2f CurrentBall() const;
 
 private:
-  Configuration const *config_;
-  std::unique_ptr<PhysicsInterface> physics_;
+  std::shared_ptr<Scene> scene_;
 };
 
 } // namespace subbuteo
