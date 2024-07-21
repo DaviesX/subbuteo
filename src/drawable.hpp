@@ -1,9 +1,10 @@
 #pragma once
 
-#include <SFML/Graphics.hpp>
+#include <SFML/Graphics/Sprite.hpp>
+#include <SFML/Graphics/Texture.hpp>
 #include <filesystem>
 #include <memory>
-#include <optional>
+#include <string>
 #include <unordered_map>
 #include <vector>
 
@@ -30,7 +31,7 @@ public:
   sf::Sprite Sprite(sf::Sprite const &apply_to) const override;
 
 private:
-sf::Texture selector_texture_;
+  sf::Texture selector_texture_;
 };
 
 class AimMaterial final : public MaterialInterface {

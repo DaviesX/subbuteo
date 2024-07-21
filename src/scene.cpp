@@ -2,6 +2,8 @@
 
 #include "scene.hpp"
 
+class b2Body;
+
 namespace subbuteo {
 
 Scene::Scene(bool visualizable) : visualizable_(visualizable) {}

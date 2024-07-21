@@ -1,13 +1,14 @@
+// IWYU pragma: no_include <__fwd/fstream.h>
+
 #include <filesystem>
 #include <fstream>
 #include <glog/logging.h>
 #include <memory>
 #include <optional>
+#include <string>
 
 #include "agent.hpp"
-#include "config.hpp"
 #include "control.hpp"
-#include "draw.hpp"
 #include "game.hpp"
 #include "log.hpp"
 #include "match.hpp"

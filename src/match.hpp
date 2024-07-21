@@ -4,12 +4,14 @@
 #include <memory>
 #include <optional>
 
-#include "agent.hpp"
 #include "config.hpp"
 #include "control.hpp"
 #include "game.hpp"
+#include "scene.hpp"
 
 namespace subbuteo {
+
+class AgentInterface;
 
 struct Match {
   std::shared_ptr<Game> game;

@@ -1,13 +1,13 @@
 #pragma once
 
-#include <box2d/box2d.h>
-#include <chrono>
+#include <box2d/b2_world.h>
 #include <cstdint>
 #include <memory>
 #include <unordered_map>
 
-#include "config.hpp"
 #include "drawable.hpp"
+
+class b2Body;
 
 namespace subbuteo {
 
