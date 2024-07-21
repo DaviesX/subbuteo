@@ -1,12 +1,14 @@
 #pragma once
 
-#include <SFML/Graphics.hpp>
+#include <SFML/Graphics/RenderWindow.hpp>
+#include <memory>
 
 #include "config.hpp"
 #include "control.hpp"
-#include "draw.hpp"
 
 namespace subbuteo {
+
+class Scene;
 
 class GameFlowInterface {
 public:
@@ -26,8 +28,8 @@ public:
 private:
   sf::RenderWindow window_;
   Configuration config_;
-  Scene scene_;
-  ControlQueue control_queue_;
+  std::shared_ptr<Scene> scene_;
+  std::shared_ptr<ControlQueue> control_queue_;
 };
 
 class LogGeneratorGameFlow final : public GameFlowInterface {

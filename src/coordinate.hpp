@@ -1,19 +1,19 @@
 #pragma once
 
-#include <SFML/System.hpp>
-#include <eigen3/Eigen/Core>
+// IWYU pragma: no_include <SFML/System/Vector2.inl>
+
+#include <SFML/System/Vector2.hpp>
 
 namespace subbuteo {
 
-using WindowPosition = Eigen::Vector2i;
-using ScreenPosition = Eigen::Vector2f;
-using MatchPosition = Eigen::Vector2f;
+using WindowPosition = sf::Vector2u;
+using ScreenPosition = sf::Vector2f;
+using WorldPosition = sf::Vector2f;
 
 inline ScreenPosition CreateScreenPosition(unsigned x, unsigned y,
                                            sf::Vector2u const &win_size) {
-  return ScreenPosition(static_cast<ScreenPosition::value_type>(x) / win_size.x,
-                        static_cast<ScreenPosition::value_type>(y) /
-                            win_size.y);
+  return ScreenPosition(static_cast<float>(x) / win_size.x,
+                        static_cast<float>(y) / win_size.y);
 }
 
 } // namespace subbuteo

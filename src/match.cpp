@@ -1,6 +1,6 @@
-#include <cassert>
 #include <filesystem>
 #include <fstream>
+#include <glog/logging.h>
 #include <memory>
 #include <optional>
 
@@ -14,9 +14,12 @@
 
 namespace subbuteo {
 
-Match CreateMatch(Configuration const &config, Scene *scene,
-                  ControlQueue *control_queue) {
+Match CreateMatch(Configuration const &config,
+                  std::shared_ptr<ControlQueue> const &control_queue,
+                  std::shared_ptr<Scene> const &scene) {
   Match result;
+  result.game = std::make_shared<Game>(config, scene);
+  result.control_queue = control_queue;
   return result;
 }
 
@@ -34,15 +37,15 @@ Game::State RunMatch(AgentInterface const &agent0, AgentInterface const &agent1,
 
     switch (match->game->CurrentPlayer()) {
     case Game::Player::PLAYER0: {
-      move = agent0.ComputeMove(*match->game, match->control_queue);
+      move = agent0.ComputeMove(*match->game, match->control_queue.get());
       agent_id = agent0.Id();
     }
     case Game::Player::PLAYER1: {
-      move = agent1.ComputeMove(*match->game, match->control_queue);
+      move = agent1.ComputeMove(*match->game, match->control_queue.get());
       agent_id = agent1.Id();
     }
     default:
-      assert(false);
+      CHECK(false) << "Unknown player " << match->game->CurrentPlayer();
     }
 
     LogMove(*match->game, move, agent_id, &log_file);

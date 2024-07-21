@@ -1,10 +1,15 @@
-#include <SFML/Graphics.hpp>
-#include <boost/log/trivial.hpp>
+
+#include <SFML/System/String.hpp>
+#include <SFML/Window/VideoMode.hpp>
+#include <filesystem>
+#include <glog/logging.h>
+#include <ostream>
 #include <thread>
 
 #include "control.hpp"
 #include "draw.hpp"
 #include "game_flow.hpp"
+#include "scene.hpp"
 
 namespace subbuteo {
 namespace {
@@ -21,27 +26,28 @@ GameFlowInterface::~GameFlowInterface() = default;
 
 InteractiveGameFlow::InteractiveGameFlow()
     : window_({kWindowWidth, kWindowHeight}, kWindowTitle),
-      config_(kResourcePath), scene_(/*visualizable=*/true) {}
+      config_(kResourcePath),
+      scene_(std::make_shared<Scene>(/*visualizable=*/true)),
+      control_queue_(std::make_shared<ControlQueue>()) {}
 
 InteractiveGameFlow::~InteractiveGameFlow() {
-  BOOST_LOG_TRIVIAL(debug) << "InteractiveGameFlow: Releasing resources...";
+  LOG(INFO) << "InteractiveGameFlow: Releasing resources...";
 }
 
 int InteractiveGameFlow::Run() {
-  BOOST_LOG_TRIVIAL(debug) << "InteractiveGameFlow: started";
+  LOG(INFO) << "InteractiveGameFlow: started";
 
-  BOOST_LOG_TRIVIAL(debug)
-      << "InteractiveGameFlow: Launching drawing thread...";
+  LOG(INFO) << "InteractiveGameFlow: Launching drawing thread...";
   std::thread drawing_thread(subbuteo::DrawScene, scene_, &window_);
 
-  BOOST_LOG_TRIVIAL(debug) << "InteractiveGameFlow: Listening controls...";
-  subbuteo::ListenControls(&window_, &control_queue_);
+  LOG(INFO) << "InteractiveGameFlow: Listening controls...";
+  subbuteo::ListenControls(&window_, control_queue_);
 
-  BOOST_LOG_TRIVIAL(debug)
+  LOG(INFO)
       << "InteractiveGameFlow: Waiting for drawing thread to terminate...";
   drawing_thread.join();
 
-  BOOST_LOG_TRIVIAL(debug) << "InteractiveGameFlow: exiting...";
+  LOG(INFO) << "InteractiveGameFlow: exiting...";
   return 0;
 }
 
@@ -49,7 +55,7 @@ LogGeneratorGameFlow::LogGeneratorGameFlow() = default;
 LogGeneratorGameFlow::~LogGeneratorGameFlow() = default;
 
 int LogGeneratorGameFlow::Run() {
-  BOOST_LOG_TRIVIAL(debug) << "LogGeneratorGameFlow: started";
+  LOG(INFO) << "LogGeneratorGameFlow: started";
   return 0;
 }
 

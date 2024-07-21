@@ -1,4 +1,4 @@
-#include <boost/log/trivial.hpp>
+#include <glog/logging.h>
 
 #include "scene.hpp"
 
@@ -8,8 +8,10 @@ Scene::Scene(bool visualizable) : visualizable_(visualizable) {}
 
 Scene::Scene(Scene const &other) : visualizable_(other.visualizable_) {}
 
+Scene::EntityId Scene::AddEntity(b2Body *body, Drawable &&drawable) {}
+
 Scene::Entity const &Scene::GetEntity(EntityId id) const {
-  BOOST_ASSERT(entities_.count(id) > 0);
+  CHECK_GE(entities_.count(id), 0);
   return entities_.at(id);
 }
 

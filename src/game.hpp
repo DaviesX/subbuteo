@@ -1,10 +1,10 @@
 #pragma once
 
-#include <eigen3/Eigen/Core>
 #include <memory>
 #include <vector>
 
 #include "config.hpp"
+#include "coordinate.hpp"
 #include "scene.hpp"
 
 namespace subbuteo {
@@ -21,11 +21,11 @@ public:
     SoccererId id;
     Player owner;
     SoccererType type;
-    Eigen::Vector2f position;
+    WorldPosition position;
   };
 
   struct Ball {
-    Eigen::Vector2f position;
+    WorldPosition position;
   };
 
   struct Move {
@@ -34,7 +34,7 @@ public:
     float power;
   };
 
-  Game(Configuration const *config, std::shared_ptr<Scene> const &scene);
+  Game(Configuration const &config, std::shared_ptr<Scene> const &scene);
   Game(Game const &other);
 
   void Launch(Move const &move);
@@ -42,7 +42,7 @@ public:
   State CurrentState() const;
   Player CurrentPlayer() const;
   std::vector<Soccerer> CurrentSoccerers() const;
-  Eigen::Vector2f CurrentBall() const;
+  WorldPosition CurrentBall() const;
 
 private:
   std::shared_ptr<Scene> scene_;

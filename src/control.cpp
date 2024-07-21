@@ -1,14 +1,14 @@
-#include <SFML/Graphics.hpp>
-#include <SFML/System.hpp>
-#include <SFML/Window.hpp>
-#include <boost/log/trivial.hpp>
-#include <eigen3/Eigen/Core>
+#include <SFML/Graphics/RenderWindow.hpp>
+#include <SFML/System/Vector2.hpp>
+#include <SFML/Window/Event.hpp>
+#include <SFML/Window/Mouse.hpp>
+#include <SFML/Window/Window.hpp>
+#include <glog/logging.h>
 #include <optional>
 #include <ostream>
 
 #include "control.hpp"
 #include "coordinate.hpp"
-#include "event_queue.hpp"
 
 namespace subbuteo {
 namespace {
@@ -68,8 +68,8 @@ void PollEvents(sf::Window *window, std::optional<DragEvent> *drag_state,
       UpdateMouseDrag(event.mouseButton, window->getSize(), /*complete=*/true,
                       drag_state);
 
-      BOOST_LOG_TRIVIAL(debug) << "PollEvents: pushing a drag event "
-                               << drag_state->value() << " to control queue...";
+      LOG(INFO) << "PollEvents: pushing a drag event " << drag_state->value()
+                << " to control queue...";
       control_queue->Push(drag_state->value());
       drag_state->reset();
       break;
@@ -84,22 +84,22 @@ void PollEvents(sf::Window *window, std::optional<DragEvent> *drag_state,
 
 } // namespace
 
-void ListenControls(sf::RenderWindow *window, ControlQueue *control_queue) {
-  BOOST_LOG_TRIVIAL(debug) << "ListenControls: started";
+void ListenControls(sf::RenderWindow *window,
+                    std::shared_ptr<ControlQueue> const &control_queue) {
+  LOG(INFO) << "ListenControls: started";
 
   std::optional<DragEvent> drag_state;
   while (window->isOpen()) {
-    PollEvents(window, &drag_state, control_queue);
+    PollEvents(window, &drag_state, control_queue.get());
   }
 
-  BOOST_LOG_TRIVIAL(debug) << "ListenControls: exiting...";
+  LOG(INFO) << "ListenControls: exiting...";
 }
 
 std::ostream &operator<<(std::ostream &stream, DragEvent const &drag_event) {
-  stream << "{origin:{x:" << drag_event.origin(0)
-         << ",y:" << drag_event.origin(1)
-         << "},current:{x:" << drag_event.current(0)
-         << ",y:" << drag_event.current(1)
+  stream << "{origin:{x:" << drag_event.origin.x << ",y:" << drag_event.origin.y
+         << "},current:{x:" << drag_event.current.x
+         << ",y:" << drag_event.current.y
          << "},complete=" << drag_event.complete << "}";
   return stream;
 }

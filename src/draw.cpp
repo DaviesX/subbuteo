@@ -1,6 +1,11 @@
-#include <SFML/Graphics.hpp>
+#include <SFML/Graphics/Color.hpp>
+#include <SFML/Graphics/RenderWindow.hpp>
+#include <SFML/Graphics/Sprite.hpp>
 #include <algorithm>
-#include <boost/log/trivial.hpp>
+#include <glog/logging.h>
+#include <memory>
+#include <ostream>
+#include <unordered_map>
 #include <vector>
 
 #include "draw.hpp"
@@ -28,13 +33,14 @@ std::vector<Drawable const *> ToSortedDrawables(const Scene &scene) {
 
 } // namespace
 
-void DrawScene(const Scene &scene, sf::RenderWindow *window) {
-  BOOST_LOG_TRIVIAL(debug) << "DrawScene: started";
+void DrawScene(std::shared_ptr<Scene const> const &scene,
+               sf::RenderWindow *window) {
+  LOG(INFO) << "DrawScene: started";
 
   while (window->isOpen()) {
     window->clear(sf::Color::White);
 
-    std::vector<Drawable const *> drawables = ToSortedDrawables(scene);
+    std::vector<Drawable const *> drawables = ToSortedDrawables(*scene);
     for (auto drawable : drawables) {
       window->draw(drawable->sprite);
       if (drawable->material != nullptr) {
@@ -46,7 +52,7 @@ void DrawScene(const Scene &scene, sf::RenderWindow *window) {
     window->display();
   }
 
-  BOOST_LOG_TRIVIAL(debug) << "DrawScene: exiting...";
+  LOG(INFO) << "DrawScene: exiting...";
 }
 
 } // namespace subbuteo

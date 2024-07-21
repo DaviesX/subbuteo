@@ -1,11 +1,17 @@
 #pragma once
 
-#include <SFML/Graphics.hpp>
-#include <eigen3/Eigen/Core>
-#include <ostream>
+// IWYU pragma: no_include <__fwd/ostream.h>
+// IWYU pragma: no_include <SFML/System/Vector2.inl>
+
+#include <memory>
+#include <ostream> // IWYU pragma: keep
 
 #include "coordinate.hpp"
 #include "event_queue.hpp"
+
+namespace sf {
+class RenderWindow;
+} // namespace sf
 
 namespace subbuteo {
 
@@ -29,7 +35,8 @@ struct DragEvent {
 
 using ControlQueue = EventQueue<DragEvent>;
 
-void ListenControls(sf::RenderWindow *window, ControlQueue *control_queue);
+void ListenControls(sf::RenderWindow *window,
+                    std::shared_ptr<ControlQueue> const&control_queue);
 std::ostream &operator<<(std::ostream &stream, DragEvent const &drag_event);
 
 } // namespace subbuteo

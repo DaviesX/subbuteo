@@ -23,10 +23,14 @@ public:
 
 class SelectorMaterial final : public MaterialInterface {
 public:
-  SelectorMaterial(MaterialName const &name);
+  SelectorMaterial(MaterialName const &name,
+                   std::filesystem::path const &selector_texture_path);
   ~SelectorMaterial() override;
 
   sf::Sprite Sprite(sf::Sprite const &apply_to) const override;
+
+private:
+sf::Texture selector_texture_;
 };
 
 class AimMaterial final : public MaterialInterface {
@@ -44,8 +48,6 @@ private:
 };
 
 struct Drawable {
-  Drawable(const std::filesystem::path &texture_path, unsigned layer);
-
   sf::Texture texture;
   sf::Sprite sprite;
   MaterialInterface *material;
@@ -56,7 +58,8 @@ class DrawableWorld {
 public:
   DrawableWorld(std::vector<std::unique_ptr<MaterialInterface>> &&materials);
 
-  Drawable *AddDrawable(Drawable && drawable);
+  Drawable *CreateDrawable(std::filesystem::path const &texture,
+                           unsigned layer);
   std::vector<Drawable *> Drawables() const;
   MaterialInterface *Material(MaterialName const &name) const;
 

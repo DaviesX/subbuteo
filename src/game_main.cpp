@@ -1,45 +1,23 @@
-#include <boost/log/attributes.hpp>
-#include <boost/log/core.hpp>
-#include <boost/program_options/option.hpp>
-#include <boost/program_options/options_description.hpp>
-#include <boost/program_options/parsers.hpp>
-#include <boost/program_options/variables_map.hpp>
-#include <string>
+#include <gflags/gflags.h>
+#include <glog/logging.h>
+#include <memory>
 
 #include "game_flow.hpp"
 
-namespace {
-
-char const *kArgLogGeneratorMode = "log-generator-mode";
-char const *kArgMatchCount = "match-count";
-char const *kArgPlayer0ModelPath = "player0-model-path";
-char const *kArgPlayer1ModelPath = "player1-model-path";
-
-} // namespace
+DEFINE_bool(log_generator_mode, false,
+            "Sets the program to generate and log new matches.");
+DEFINE_uint32(match_count, 1, "The number of matches to generate.");
+DEFINE_string(player_0_model_path, "",
+              "Sets the path to the model used by player 0.");
+DEFINE_string(player_1_model_path, "",
+              "Sets the path to the model used by player 1.");
 
 int main(int argc, char *argv[]) {
-  boost::log::core::get()->add_global_attribute(
-      "Function", boost::log::attributes::mutable_constant<std::string>(""));
-
-  boost::program_options::options_description desc;
-  desc.add_options()("help", "produce help message")(
-      kArgLogGeneratorMode, boost::program_options::value<bool>(),
-      "Sets the program to generate and log new matches.")(
-      kArgMatchCount, boost::program_options::value<unsigned>(),
-      "The number of matches to generate.")(
-      kArgPlayer0ModelPath, boost::program_options::value<std::string>(),
-      "Sets the path to the model used by player 0.")(
-      kArgPlayer1ModelPath, boost::program_options::value<std::string>(),
-      "Sets the path to the model used by player 1.");
-
-  boost::program_options::variables_map args;
-  boost::program_options::store(
-      boost::program_options::parse_command_line(argc, argv, desc), args);
-  boost::program_options::notify(args);
+  gflags::ParseCommandLineFlags(&argc, &argv, /*remove_flags=*/true);
+  google::InitGoogleLogging(argv[0]);
 
   std::unique_ptr<subbuteo::GameFlowInterface> game_flow;
-  if (args.count(kArgLogGeneratorMode) &&
-      args[kArgLogGeneratorMode].as<bool>()) {
+  if (FLAGS_match_count > 0 && FLAGS_log_generator_mode) {
     game_flow = std::make_unique<subbuteo::LogGeneratorGameFlow>();
   } else {
     game_flow = std::make_unique<subbuteo::InteractiveGameFlow>();

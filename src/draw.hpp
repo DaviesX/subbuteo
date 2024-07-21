@@ -1,11 +1,15 @@
 #pragma once
 
-#include <SFML/Graphics.hpp>
+#include <memory>
 
 #include "scene.hpp"
 
+namespace sf {
+class RenderWindow;
+} // namespace sf
+
 namespace subbuteo {
 
-void DrawScene(const Scene &scene, sf::RenderWindow *window);
+void DrawScene(std::shared_ptr<Scene const> const &scene, sf::RenderWindow *window);
 
 } // namespace subbuteo

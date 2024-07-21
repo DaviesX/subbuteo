@@ -1,8 +1,13 @@
-#include <SFML/Graphics.hpp>
-#include <boost/json.hpp>
-#include <eigen3/Eigen/Core>
+// IWYU pragma: no_include <__fwd/fstream.h>
+// IWYU pragma: no_include <__fwd/sstream.h>
+
 #include <filesystem>
 #include <fstream>
+#include <glog/logging.h>
+#include <rapidjson/allocators.h>
+#include <rapidjson/document.h>
+#include <rapidjson/encodings.h>
+#include <rapidjson/rapidjson.h>
 #include <sstream>
 #include <string>
 #include <vector>
@@ -14,17 +19,24 @@ namespace {
 
 char const *kConfigFileName = "config.json";
 
-boost::json::value ParseConfigFile(std::filesystem::path const &resource_path) {
+rapidjson::Document
+ParseConfigFile(std::filesystem::path const &resource_path) {
   std::ifstream config_file(resource_path / kConfigFileName);
+  CHECK(config_file.is_open())
+      << "Error opening " << (resource_path / kConfigFileName).string();
   std::stringstream buffer;
   buffer << config_file.rdbuf();
-  return boost::json::parse(buffer.str());
+
+  rapidjson::Document result;
+  result.Parse<0>(buffer.str().c_str());
+  CHECK(!result.HasParseError()) << "Error parsing " << kConfigFileName;
+  return result;
 }
 
 } // namespace
 
 Configuration::Configuration(std::filesystem::path const &resource_path) {
-  boost::json::value json = ParseConfigFile(resource_path);
+  rapidjson::Document config = ParseConfigFile(resource_path);
 }
 
 Configuration::~Configuration() = default;
@@ -43,11 +55,11 @@ Configuration::FootballerPhysicsParameters() const {
   return foot_baller_params_;
 }
 
-std::vector<Eigen::Vector2f> const &Configuration::DefensePositions() const {
+std::vector<WorldPosition> const &Configuration::DefensePositions() const {
   return defense_positions_;
 }
 
-std::vector<Eigen::Vector2f> const &Configuration::OffensePositions() const {
+std::vector<WorldPosition> const &Configuration::OffensePositions() const {
   return offense_positions_;
 }
 
