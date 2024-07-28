@@ -8,20 +8,18 @@
 #include <string>
 
 #include "agent.hpp"
-#include "control.hpp"
 #include "game.hpp"
 #include "log.hpp"
 #include "match.hpp"
 
 namespace subbuteo {
 
-Match CreateMatch(Configuration const &config,
-                  std::shared_ptr<ControlQueue> const &control_queue,
-                  std::shared_ptr<Scene> const &scene) {
-  Match result;
-  result.game = std::make_shared<Game>(config, scene);
-  result.control_queue = control_queue;
-  return result;
+void LoadMatch(Configuration const &config, Game::Player offense,
+               unsigned player_0_texture_index, unsigned player_1_texture_index,
+               std::shared_ptr<Scene> const &scene) {
+  // TODO: Loads the scoreboard etc.
+  LoadGame(config, offense, player_0_texture_index, player_1_texture_index,
+           scene);
 }
 
 Game::State RunMatch(AgentInterface const &agent0, AgentInterface const &agent1,

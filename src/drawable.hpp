@@ -1,12 +1,17 @@
 #pragma once
 
+// IWYU pragma: no_include <SFML/System/Vector2.inl>
+
 #include <SFML/Graphics/Sprite.hpp>
 #include <SFML/Graphics/Texture.hpp>
+#include <SFML/System/Vector2.hpp>
 #include <filesystem>
 #include <memory>
 #include <string>
 #include <unordered_map>
 #include <vector>
+
+#include "coordinate.hpp"
 
 namespace subbuteo {
 
@@ -49,18 +54,24 @@ private:
 };
 
 struct Drawable {
-  sf::Texture texture;
-  sf::Sprite sprite;
-  MaterialInterface *material;
+  Drawable(WorldPosition const &position, sf::Vector2f const &dimension,
+           unsigned layer, float angle, sf::Texture const &texture);
+
+  WorldPosition position;
+  sf::Vector2f dimension;
   unsigned layer;
+  float angle;
+  sf::Texture texture;
+  MaterialInterface *material;
 };
 
 class DrawableWorld {
 public:
   DrawableWorld(std::vector<std::unique_ptr<MaterialInterface>> &&materials);
 
-  Drawable *CreateDrawable(std::filesystem::path const &texture,
-                           unsigned layer);
+  Drawable *CreateDrawable(WorldPosition const &position,
+                           sf::Vector2f const &dimension, unsigned layer,
+                           float angle, sf::Texture const &texture);
   std::vector<Drawable *> Drawables() const;
   MaterialInterface *Material(MaterialName const &name) const;
 

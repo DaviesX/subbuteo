@@ -1,40 +1,53 @@
 #pragma once
 
 #include <SFML/Graphics/Texture.hpp>
+#include <SFML/System/Vector2.hpp>
 #include <filesystem>
 #include <string>
 #include <vector>
-
-#include "coordinate.hpp"
 
 namespace subbuteo {
 
 class Configuration {
 public:
+  enum SoccererType {
+    FOOT_BALLER,
+    GOAL_KEEPER,
+  };
+
   struct PhysicsParameters {
     float radius;
-    float mass;
+    float density;
+    float friction;
+  };
+
+  struct FieldPosition {
+    SoccererType soccerer_type;
+    float from_left;
+    float from_central;
   };
 
   Configuration(std::filesystem::path const &resource_path);
   ~Configuration();
 
-  std::string Version() const;
+  std::string const &Version() const;
   unsigned TeamSize() const;
+  sf::Vector2f const &FieldDimension() const;
   PhysicsParameters const &GoalKeeperPhysicsParameters() const;
   PhysicsParameters const &FootballerPhysicsParameters() const;
-  std::vector<WorldPosition> const &DefensePositions() const;
-  std::vector<WorldPosition> const &OffensePositions() const;
-  std::vector<sf::Texture> const &SoccererTextures() const;
+  std::vector<FieldPosition> const &DefensePositions() const;
+  std::vector<FieldPosition> const &OffensePositions() const;
+  std::vector<sf::Texture> const &AvailableSoccererTextures() const;
 
 private:
   std::string version_;
   unsigned team_size_;
+  sf::Vector2f field_dimension_;
   PhysicsParameters goal_keeper_params_;
   PhysicsParameters foot_baller_params_;
-  std::vector<WorldPosition> defense_positions_;
-  std::vector<WorldPosition> offense_positions_;
-  std::vector<sf::Texture> soccerer_textures_;
+  std::vector<FieldPosition> defense_positions_;
+  std::vector<FieldPosition> offense_positions_;
+  std::vector<sf::Texture> available_soccerer_textures_;
 };
 
 } // namespace subbuteo

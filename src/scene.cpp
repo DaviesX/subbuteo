@@ -1,20 +1,46 @@
 #include <glog/logging.h>
+#include <ostream>
+#include <stddef.h>
+#include <utility>
 
 #include "scene.hpp"
 
 class b2Body;
 
 namespace subbuteo {
+namespace {
 
-Scene::Scene(bool visualizable) : visualizable_(visualizable) {}
+size_t const kExpectedNumEntities = 20;
+
+} // namespace
+
+Scene::Scene(bool visualizable) : visualizable_(visualizable) {
+  entities_.reserve(kExpectedNumEntities);
+}
 
 Scene::Scene(Scene const &other) : visualizable_(other.visualizable_) {}
 
-Scene::EntityId Scene::AddEntity(b2Body *body, Drawable &&drawable) {}
+bool Scene::Visualizable() const { return visualizable_; }
 
-Scene::Entity const &Scene::GetEntity(EntityId id) const {
-  CHECK_GE(entities_.count(id), 0);
-  return entities_.at(id);
+void Scene::AddEntity(EntityId id, CreateBodyFn const &create_body_fn,
+                      CreateDrawableFn const &create_drawable_fn) {
+  CHECK_NOTNULL(physics_world_);
+  b2Body *body = create_body_fn(physics_world_.get());
+  Drawable *drawable = nullptr;
+  if (visualizable_) {
+    CHECK_NOTNULL(drawable_world_);
+    drawable = create_drawable_fn(drawable_world_.get());
+  }
+
+  bool inserted =
+      entities_.insert(std::make_pair(id, Entity(body, drawable))).second;
+  CHECK(inserted) << "Entity with ID " << id << " has already been added.";
+}
+
+Scene::Entity Scene::GetEntity(EntityId id) const {
+  auto it = entities_.find(id);
+  CHECK(it != entities_.end()) << "Entity with ID " << id << " doesn't exist.";
+  return it->second;
 }
 
 std::unordered_map<Scene::EntityId, Scene::Entity> const &

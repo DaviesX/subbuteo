@@ -1,5 +1,6 @@
 // IWYU pragma: no_include <__fwd/fstream.h>
 // IWYU pragma: no_include <__fwd/sstream.h>
+// IWYU pragma: no_include <SFML/System/Vector2.inl>
 
 #include <filesystem>
 #include <fstream>
@@ -10,7 +11,6 @@
 #include <rapidjson/rapidjson.h>
 #include <sstream>
 #include <string>
-#include <vector>
 
 #include "config.hpp"
 
@@ -41,9 +41,13 @@ Configuration::Configuration(std::filesystem::path const &resource_path) {
 
 Configuration::~Configuration() = default;
 
-std::string Configuration::Version() const { return version_; }
+std::string const &Configuration::Version() const { return version_; }
 
 unsigned Configuration::TeamSize() const { return team_size_; }
+
+sf::Vector2f const &Configuration::FieldDimension() const {
+  return field_dimension_;
+}
 
 Configuration::PhysicsParameters const &
 Configuration::GoalKeeperPhysicsParameters() const {
@@ -55,16 +59,19 @@ Configuration::FootballerPhysicsParameters() const {
   return foot_baller_params_;
 }
 
-std::vector<WorldPosition> const &Configuration::DefensePositions() const {
+std::vector<Configuration::FieldPosition> const &
+Configuration::DefensePositions() const {
   return defense_positions_;
 }
 
-std::vector<WorldPosition> const &Configuration::OffensePositions() const {
+std::vector<Configuration::FieldPosition> const &
+Configuration::OffensePositions() const {
   return offense_positions_;
 }
 
-std::vector<sf::Texture> const &Configuration::SoccererTextures() const {
-  return soccerer_textures_;
+std::vector<sf::Texture> const &
+Configuration::AvailableSoccererTextures() const {
+  return available_soccerer_textures_;
 }
 
 } // namespace subbuteo

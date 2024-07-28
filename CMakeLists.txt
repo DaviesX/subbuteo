@@ -26,6 +26,7 @@ endif()
 set(SRCS
     src/agent_human.cpp
     src/agent.cpp
+    src/camera.cpp
     src/config.cpp
     src/control.cpp
     src/coordinate.cpp

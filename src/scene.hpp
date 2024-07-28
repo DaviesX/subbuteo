@@ -2,9 +2,11 @@
 
 #include <box2d/b2_world.h>
 #include <cstdint>
+#include <functional>
 #include <memory>
 #include <unordered_map>
 
+#include "camera.hpp"
 #include "drawable.hpp"
 
 class b2Body;
@@ -15,7 +17,12 @@ class Scene {
 public:
   using EntityId = int64_t;
 
+  using CreateBodyFn = std::function<b2Body *(b2World *world)>;
+  using CreateDrawableFn = std::function<Drawable *(DrawableWorld *world)>;
+
   struct Entity {
+    Entity(b2Body *body, Drawable *drawable) : body(body), drawable(drawable) {}
+
     b2Body *body;
     Drawable *drawable;
   };
@@ -23,10 +30,15 @@ public:
   Scene(bool visualizable);
   Scene(Scene const &other);
 
-  EntityId AddEntity(b2Body *body, Drawable &&drawable);
-  Entity const &GetEntity(EntityId id) const;
+  bool Visualizable() const;
+  void AddEntity(EntityId id, CreateBodyFn const &create_body_fn,
+                 CreateDrawableFn const &create_drawable_fn);
+  Entity GetEntity(EntityId id) const;
   std::unordered_map<EntityId, Entity> const &Entities() const;
   void Step();
+
+public:
+  Camera camera;
 
 private:
   bool const visualizable_;

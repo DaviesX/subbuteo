@@ -31,23 +31,22 @@ InteractiveGameFlow::InteractiveGameFlow()
       control_queue_(std::make_shared<ControlQueue>()) {}
 
 InteractiveGameFlow::~InteractiveGameFlow() {
-  LOG(INFO) << "InteractiveGameFlow: Releasing resources...";
+  LOG(INFO) << "Releasing resources...";
 }
 
 int InteractiveGameFlow::Run() {
-  LOG(INFO) << "InteractiveGameFlow: started";
+  LOG(INFO) << "InteractiveGameFlow started";
 
-  LOG(INFO) << "InteractiveGameFlow: Launching drawing thread...";
+  LOG(INFO) << "Launching drawing thread...";
   std::thread drawing_thread(subbuteo::DrawScene, scene_, &window_);
 
-  LOG(INFO) << "InteractiveGameFlow: Listening controls...";
+  LOG(INFO) << "Listening controls...";
   subbuteo::ListenControls(&window_, control_queue_);
 
-  LOG(INFO)
-      << "InteractiveGameFlow: Waiting for drawing thread to terminate...";
+  LOG(INFO) << "Waiting for drawing thread to terminate...";
   drawing_thread.join();
 
-  LOG(INFO) << "InteractiveGameFlow: exiting...";
+  LOG(INFO) << "InteractiveGameFlow exiting...";
   return 0;
 }
 
@@ -55,7 +54,7 @@ LogGeneratorGameFlow::LogGeneratorGameFlow() = default;
 LogGeneratorGameFlow::~LogGeneratorGameFlow() = default;
 
 int LogGeneratorGameFlow::Run() {
-  LOG(INFO) << "LogGeneratorGameFlow: started";
+  LOG(INFO) << "LogGeneratorGameFlow started";
   return 0;
 }
 

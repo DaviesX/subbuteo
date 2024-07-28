@@ -1,6 +1,7 @@
 #include <SFML/Graphics/Color.hpp>
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Graphics/Sprite.hpp>
+#include <SFML/Graphics/Texture.hpp>
 #include <algorithm>
 #include <glog/logging.h>
 #include <memory>
@@ -8,6 +9,7 @@
 #include <unordered_map>
 #include <vector>
 
+#include "camera.hpp"
 #include "draw.hpp"
 #include "drawable.hpp"
 #include "scene.hpp"
@@ -35,24 +37,36 @@ std::vector<Drawable const *> ToSortedDrawables(const Scene &scene) {
 
 void DrawScene(std::shared_ptr<Scene const> const &scene,
                sf::RenderWindow *window) {
-  LOG(INFO) << "DrawScene: started";
+  LOG(INFO) << "DrawScene started";
+
+  if (scene->Visualizable()) {
+    LOG(INFO) << "Scene is not visualizable. DrawScene exiting...";
+    return;
+  }
 
   while (window->isOpen()) {
     window->clear(sf::Color::White);
 
     std::vector<Drawable const *> drawables = ToSortedDrawables(*scene);
     for (auto drawable : drawables) {
-      window->draw(drawable->sprite);
+      sf::Sprite sprite(drawable->texture);
+      sprite.setPosition(
+          ComputeWindowPosition(scene->camera, drawable->position));
+      sprite.setScale(ComputeWindowScale(scene->camera, drawable->dimension,
+                                         drawable->texture.getSize()));
+      sprite.setRotation(drawable->angle);
+      window->draw(sprite);
+
       if (drawable->material != nullptr) {
-        sf::Sprite material = drawable->material->Sprite(drawable->sprite);
-        window->draw(material);
+        sf::Sprite material_sprite = drawable->material->Sprite(sprite);
+        window->draw(material_sprite);
       }
     }
 
     window->display();
   }
 
-  LOG(INFO) << "DrawScene: exiting...";
+  LOG(INFO) << "DrawScene exiting...";
 }
 
 } // namespace subbuteo

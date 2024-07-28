@@ -17,10 +17,8 @@ public:
   enum SoccererType { Baller, GoalKeeper };
   enum State { ONGOING, PLAYER0_GOAL, PLAYER1_GOAL };
 
-  using SoccererId = unsigned;
-
   struct Soccerer {
-    SoccererId id;
+    Scene::EntityId id;
     Player owner;
     SoccererType type;
     WorldPosition position;
@@ -31,12 +29,12 @@ public:
   };
 
   struct Move {
-    SoccererId id;
+    Scene::EntityId id;
     float angle;
     float power;
   };
 
-  Game(Configuration const &config, std::shared_ptr<Scene> const &scene);
+  Game(std::shared_ptr<Scene> const &scene);
   Game(Game const &other);
 
   void Launch(Move const &move);
@@ -49,5 +47,9 @@ public:
 private:
   std::shared_ptr<Scene> scene_;
 };
+
+void LoadGame(Configuration const &config, Game::Player offense,
+              unsigned player_0_texture_index, unsigned player_1_texture_index,
+              std::shared_ptr<Scene> const &scene);
 
 } // namespace subbuteo
