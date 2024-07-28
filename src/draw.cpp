@@ -36,6 +36,7 @@ std::vector<Drawable const *> ToSortedDrawables(const Scene &scene) {
 } // namespace
 
 void DrawScene(std::shared_ptr<Scene const> const &scene,
+               std::shared_ptr<Camera const> const &camera,
                sf::RenderWindow *window) {
   LOG(INFO) << "DrawScene started";
 
@@ -50,9 +51,8 @@ void DrawScene(std::shared_ptr<Scene const> const &scene,
     std::vector<Drawable const *> drawables = ToSortedDrawables(*scene);
     for (auto drawable : drawables) {
       sf::Sprite sprite(drawable->texture);
-      sprite.setPosition(
-          ComputeWindowPosition(scene->camera, drawable->position));
-      sprite.setScale(ComputeWindowScale(scene->camera, drawable->dimension,
+      sprite.setPosition(ComputeWindowPosition(*camera, drawable->position));
+      sprite.setScale(ComputeWindowScale(*camera, drawable->dimension,
                                          drawable->texture.getSize()));
       sprite.setRotation(drawable->angle);
       window->draw(sprite);

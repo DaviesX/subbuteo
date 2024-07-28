@@ -1,5 +1,4 @@
 #include <SFML/Graphics/RenderWindow.hpp>
-#include <SFML/System/Vector2.hpp>
 #include <SFML/Window/Event.hpp>
 #include <SFML/Window/Mouse.hpp>
 #include <SFML/Window/Window.hpp>
@@ -7,6 +6,7 @@
 #include <optional>
 #include <ostream>
 
+#include "camera.hpp"
 #include "control.hpp"
 #include "coordinate.hpp"
 
@@ -14,24 +14,25 @@ namespace subbuteo {
 namespace {
 
 void UpdateMouseDrag(sf::Event::MouseButtonEvent const &mouse_down_event,
-                     sf::Vector2u const &window_size, bool complete,
+                     Camera const &camera, bool complete,
                      std::optional<DragEvent> *drag_state) {
   if (sf::Mouse::Button::Left != mouse_down_event.button) {
     return;
   }
 
-  ScreenPosition mouse_pos =
-      CreateScreenPosition(mouse_down_event.x, mouse_down_event.y, window_size);
+  WorldPosition pos = ComputeWorldPosition(
+      camera, WindowPosition(mouse_down_event.x, mouse_down_event.y));
 
   if (!drag_state->has_value()) {
-    drag_state->emplace(DragEvent(/*origin=*/mouse_pos));
+    drag_state->emplace(DragEvent(/*origin=*/pos));
     return;
   }
-  drag_state->value().current = mouse_pos;
+  drag_state->value().current = pos;
   drag_state->value().complete = complete;
 }
 
-void PollEvents(sf::Window *window, std::optional<DragEvent> *drag_state,
+void PollEvents(sf::Window *window, Camera const &camera,
+                std::optional<DragEvent> *drag_state,
                 ControlQueue *control_queue) {
   sf::Event event;
   while (window->pollEvent(event)) {
@@ -41,7 +42,7 @@ void PollEvents(sf::Window *window, std::optional<DragEvent> *drag_state,
       break;
     }
     case sf::Event::MouseButtonPressed: {
-      UpdateMouseDrag(event.mouseButton, window->getSize(), /*complete=*/false,
+      UpdateMouseDrag(event.mouseButton, camera, /*complete=*/false,
                       drag_state);
 
       if (drag_state->has_value()) {
@@ -57,7 +58,7 @@ void PollEvents(sf::Window *window, std::optional<DragEvent> *drag_state,
         break;
       }
 
-      UpdateMouseDrag(event.mouseButton, window->getSize(), /*complete=*/false,
+      UpdateMouseDrag(event.mouseButton, camera, /*complete=*/false,
                       drag_state);
       break;
     }
@@ -65,8 +66,7 @@ void PollEvents(sf::Window *window, std::optional<DragEvent> *drag_state,
       if (!drag_state->has_value()) {
         break;
       }
-      UpdateMouseDrag(event.mouseButton, window->getSize(), /*complete=*/true,
-                      drag_state);
+      UpdateMouseDrag(event.mouseButton, camera, /*complete=*/true, drag_state);
 
       LOG(INFO) << "PollEvents: pushing a drag event " << drag_state->value()
                 << " to control queue...";
@@ -85,12 +85,13 @@ void PollEvents(sf::Window *window, std::optional<DragEvent> *drag_state,
 } // namespace
 
 void ListenControls(sf::RenderWindow *window,
+                    std::shared_ptr<Camera const> const &camera,
                     std::shared_ptr<ControlQueue> const &control_queue) {
   LOG(INFO) << "ListenControls: started";
 
   std::optional<DragEvent> drag_state;
   while (window->isOpen()) {
-    PollEvents(window, &drag_state, control_queue.get());
+    PollEvents(window, *camera, &drag_state, control_queue.get());
   }
 
   LOG(INFO) << "ListenControls: exiting...";

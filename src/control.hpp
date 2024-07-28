@@ -6,6 +6,7 @@
 #include <memory>
 #include <ostream> // IWYU pragma: keep
 
+#include "camera.hpp"
 #include "coordinate.hpp"
 #include "event_queue.hpp"
 
@@ -15,28 +16,29 @@ class RenderWindow;
 
 namespace subbuteo {
 
-ScreenPosition const NullDragPosition = ScreenPosition(-1, -1);
+WorldPosition const NullDragPosition = WorldPosition(-1, -1);
 
 struct DragEvent {
   DragEvent()
       : origin(NullDragPosition), current(NullDragPosition), complete(false) {}
-  DragEvent(ScreenPosition const &origin)
+  DragEvent(WorldPosition const &origin)
       : origin(origin), current(NullDragPosition), complete(false) {}
-  DragEvent(ScreenPosition const &origin, ScreenPosition const &current)
+  DragEvent(WorldPosition const &origin, WorldPosition const &current)
       : origin(origin), current(current), complete(false) {}
-  DragEvent(ScreenPosition const &origin, ScreenPosition const &current,
+  DragEvent(WorldPosition const &origin, WorldPosition const &current,
             bool complete)
       : origin(origin), current(current), complete(complete) {}
 
-  ScreenPosition origin;
-  ScreenPosition current;
+  WorldPosition origin;
+  WorldPosition current;
   bool complete;
 };
 
 using ControlQueue = EventQueue<DragEvent>;
 
 void ListenControls(sf::RenderWindow *window,
-                    std::shared_ptr<ControlQueue> const&control_queue);
+                    std::shared_ptr<Camera const> const &camera,
+                    std::shared_ptr<ControlQueue> const &control_queue);
 std::ostream &operator<<(std::ostream &stream, DragEvent const &drag_event);
 
 } // namespace subbuteo

@@ -8,6 +8,10 @@
 namespace subbuteo {
 
 struct Camera {
+  Camera();
+  Camera(WorldPosition const &center, sf::Vector2f const &view_dimension,
+         sf::Vector2u const &window_dimension);
+
   WorldPosition center;
   sf::Vector2f view_dimension;
   sf::Vector2u window_dimension;
@@ -16,7 +20,8 @@ struct Camera {
 sf::Vector2f ComputeWindowPosition(Camera const &camera,
                                    WorldPosition const &position);
 sf::Vector2f ComputeWindowScale(Camera const &camera,
-                                sf::Vector2f const &dimension,
+                                sf::Vector2f const &object_dimension,
                                 sf::Vector2u const &texture_dimension);
+WorldPosition ComputeWorldPosition(Camera const& camera, WindowPosition const& position);
 
 } // namespace subbuteo

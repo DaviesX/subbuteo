@@ -8,6 +8,7 @@
 
 namespace subbuteo {
 
+struct Camera;
 class Scene;
 
 class GameFlowInterface {
@@ -28,6 +29,7 @@ public:
 private:
   sf::RenderWindow window_;
   Configuration config_;
+  std::shared_ptr<Camera> camera_;
   std::shared_ptr<Scene> scene_;
   std::shared_ptr<ControlQueue> control_queue_;
 };

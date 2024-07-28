@@ -6,6 +6,7 @@
 #include <ostream>
 #include <thread>
 
+#include "camera.hpp"
 #include "control.hpp"
 #include "draw.hpp"
 #include "game_flow.hpp"
@@ -26,7 +27,7 @@ GameFlowInterface::~GameFlowInterface() = default;
 
 InteractiveGameFlow::InteractiveGameFlow()
     : window_({kWindowWidth, kWindowHeight}, kWindowTitle),
-      config_(kResourcePath),
+      config_(kResourcePath), camera_(std::make_shared<Camera>()),
       scene_(std::make_shared<Scene>(/*visualizable=*/true)),
       control_queue_(std::make_shared<ControlQueue>()) {}
 
@@ -38,10 +39,10 @@ int InteractiveGameFlow::Run() {
   LOG(INFO) << "InteractiveGameFlow started";
 
   LOG(INFO) << "Launching drawing thread...";
-  std::thread drawing_thread(subbuteo::DrawScene, scene_, &window_);
+  std::thread drawing_thread(subbuteo::DrawScene, scene_, camera_, &window_);
 
   LOG(INFO) << "Listening controls...";
-  subbuteo::ListenControls(&window_, control_queue_);
+  subbuteo::ListenControls(&window_, camera_, control_queue_);
 
   LOG(INFO) << "Waiting for drawing thread to terminate...";
   drawing_thread.join();

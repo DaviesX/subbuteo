@@ -6,7 +6,6 @@
 #include <memory>
 #include <unordered_map>
 
-#include "camera.hpp"
 #include "drawable.hpp"
 
 class b2Body;
@@ -36,9 +35,6 @@ public:
   Entity GetEntity(EntityId id) const;
   std::unordered_map<EntityId, Entity> const &Entities() const;
   void Step();
-
-public:
-  Camera camera;
 
 private:
   bool const visualizable_;
