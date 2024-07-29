@@ -1,15 +1,13 @@
 #pragma once
 
 #include <SFML/Graphics/RenderWindow.hpp>
-#include <memory>
 
+#include "camera.hpp"
 #include "config.hpp"
 #include "control.hpp"
+#include "scene.hpp"
 
 namespace subbuteo {
-
-struct Camera;
-class Scene;
 
 class GameFlowInterface {
 public:
@@ -29,9 +27,10 @@ public:
 private:
   sf::RenderWindow window_;
   Configuration config_;
-  std::shared_ptr<Camera> camera_;
-  std::shared_ptr<Scene> scene_;
-  std::shared_ptr<ControlQueue> control_queue_;
+  Camera camera_;
+  Scene scene_;
+  ControlQueue control_queue_;
+  bool close_event_;
 };
 
 class LogGeneratorGameFlow final : public GameFlowInterface {

@@ -34,8 +34,9 @@ public:
     float power;
   };
 
-  Game(std::shared_ptr<Scene> const &scene);
-  Game(Game const &other);
+  Game(Scene const *scene);
+  Game(Game &&other);
+  Game(Game const &) = delete;
 
   void Launch(Move const &move);
   unsigned CurrentRound() const;
@@ -45,11 +46,11 @@ public:
   WorldPosition CurrentBall() const;
 
 private:
-  std::shared_ptr<Scene> scene_;
+  Scene const *scene_;
 };
 
 void LoadGame(Configuration const &config, Game::Player offense,
               unsigned player_0_texture_index, unsigned player_1_texture_index,
-              std::shared_ptr<Scene> const &scene);
+              Scene *scene);
 
 } // namespace subbuteo

@@ -6,11 +6,9 @@
 #include <ostream>
 #include <thread>
 
-#include "camera.hpp"
 #include "control.hpp"
 #include "draw.hpp"
 #include "game_flow.hpp"
-#include "scene.hpp"
 
 namespace subbuteo {
 namespace {
@@ -27,9 +25,8 @@ GameFlowInterface::~GameFlowInterface() = default;
 
 InteractiveGameFlow::InteractiveGameFlow()
     : window_({kWindowWidth, kWindowHeight}, kWindowTitle),
-      config_(kResourcePath), camera_(std::make_shared<Camera>()),
-      scene_(std::make_shared<Scene>(/*visualizable=*/true)),
-      control_queue_(std::make_shared<ControlQueue>()) {}
+      config_(kResourcePath), camera_(window_.getSize()),
+      scene_(/*visualizable=*/true), close_event_(false) {}
 
 InteractiveGameFlow::~InteractiveGameFlow() {
   LOG(INFO) << "Releasing resources...";
@@ -39,13 +36,19 @@ int InteractiveGameFlow::Run() {
   LOG(INFO) << "InteractiveGameFlow started";
 
   LOG(INFO) << "Launching drawing thread...";
-  std::thread drawing_thread(subbuteo::DrawScene, scene_, camera_, &window_);
+  window_.setActive(false);
+  std::thread drawing_thread(subbuteo::DrawScene, scene_, camera_,
+                             &close_event_, &window_);
 
   LOG(INFO) << "Listening controls...";
-  subbuteo::ListenControls(&window_, camera_, control_queue_);
+  close_event_ = subbuteo::ListenControls(&window_, camera_, &control_queue_);
+  CHECK(close_event_) << "Error listening to controls.";
 
   LOG(INFO) << "Waiting for drawing thread to terminate...";
   drawing_thread.join();
+
+  LOG(INFO) << "Closing window...";
+  window_.close();
 
   LOG(INFO) << "InteractiveGameFlow exiting...";
   return 0;

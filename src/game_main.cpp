@@ -13,6 +13,8 @@ DEFINE_string(player_1_model_path, "",
               "Sets the path to the model used by player 1.");
 
 int main(int argc, char *argv[]) {
+  FLAGS_alsologtostderr = true;
+
   gflags::ParseCommandLineFlags(&argc, &argv, /*remove_flags=*/true);
   google::InitGoogleLogging(argv[0]);
 

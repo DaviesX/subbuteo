@@ -4,7 +4,6 @@
 #include <SFML/Graphics/Texture.hpp>
 #include <algorithm>
 #include <glog/logging.h>
-#include <memory>
 #include <ostream>
 #include <unordered_map>
 #include <vector>
@@ -35,24 +34,23 @@ std::vector<Drawable const *> ToSortedDrawables(const Scene &scene) {
 
 } // namespace
 
-void DrawScene(std::shared_ptr<Scene const> const &scene,
-               std::shared_ptr<Camera const> const &camera,
-               sf::RenderWindow *window) {
+void DrawScene(Scene const &scene, Camera const &camera,
+               bool const *close_event, sf::RenderWindow *window) {
   LOG(INFO) << "DrawScene started";
 
-  if (scene->Visualizable()) {
+  if (!scene.Visualizable()) {
     LOG(INFO) << "Scene is not visualizable. DrawScene exiting...";
     return;
   }
 
-  while (window->isOpen()) {
+  while (!*close_event) {
     window->clear(sf::Color::White);
 
-    std::vector<Drawable const *> drawables = ToSortedDrawables(*scene);
+    std::vector<Drawable const *> drawables = ToSortedDrawables(scene);
     for (auto drawable : drawables) {
       sf::Sprite sprite(drawable->texture);
-      sprite.setPosition(ComputeWindowPosition(*camera, drawable->position));
-      sprite.setScale(ComputeWindowScale(*camera, drawable->dimension,
+      sprite.setPosition(ComputeWindowPosition(camera, drawable->position));
+      sprite.setScale(ComputeWindowScale(camera, drawable->dimension,
                                          drawable->texture.getSize()));
       sprite.setRotation(drawable->angle);
       window->draw(sprite);

@@ -3,10 +3,8 @@
 // IWYU pragma: no_include <__fwd/ostream.h>
 // IWYU pragma: no_include <SFML/System/Vector2.inl>
 
-#include <memory>
 #include <ostream> // IWYU pragma: keep
 
-#include "camera.hpp"
 #include "coordinate.hpp"
 #include "event_queue.hpp"
 
@@ -15,6 +13,8 @@ class RenderWindow;
 } // namespace sf
 
 namespace subbuteo {
+
+struct Camera;
 
 WorldPosition const NullDragPosition = WorldPosition(-1, -1);
 
@@ -36,9 +36,8 @@ struct DragEvent {
 
 using ControlQueue = EventQueue<DragEvent>;
 
-void ListenControls(sf::RenderWindow *window,
-                    std::shared_ptr<Camera const> const &camera,
-                    std::shared_ptr<ControlQueue> const &control_queue);
+bool ListenControls(sf::RenderWindow *window, Camera const &camera,
+                    ControlQueue *control_queue);
 std::ostream &operator<<(std::ostream &stream, DragEvent const &drag_event);
 
 } // namespace subbuteo

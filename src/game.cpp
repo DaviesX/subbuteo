@@ -90,7 +90,7 @@ ToWorldPositions(
 
 void LoadSoccerers(Game::Player player, bool offense,
                    unsigned player_texture_index, Configuration const &config,
-                   std::shared_ptr<Scene> const &scene) {
+                   Scene *scene) {
   std::vector<std::pair<Configuration::SoccererType, WorldPosition>>
       soccerer_positions;
   soccerer_positions.reserve(config.TeamSize());
@@ -166,14 +166,13 @@ void LoadSoccerers(Game::Player player, bool offense,
 
 } // namespace
 
-Game::Game(std::shared_ptr<Scene> const &scene) : scene_(scene) {}
+Game::Game(Scene const *scene) : scene_(scene) {}
 
-Game::Game(Game const &other)
-    : scene_(std::make_shared<Scene>(*other.scene_)) {}
+Game::Game(Game &&other) : scene_(nullptr) { std::swap(scene_, other.scene_); }
 
 void LoadGame(Configuration const &config, Game::Player offense,
               unsigned player_0_texture_index, unsigned player_1_texture_index,
-              std::shared_ptr<Scene> const &scene) {
+              Scene *scene) {
   LoadSoccerers(Game::Player::PLAYER0, offense == Game::PLAYER0,
                 player_0_texture_index, config, scene);
   LoadSoccerers(Game::Player::PLAYER1, offense == Game::PLAYER1,

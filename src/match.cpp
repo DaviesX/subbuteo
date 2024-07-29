@@ -3,20 +3,33 @@
 #include <filesystem>
 #include <fstream>
 #include <glog/logging.h>
-#include <memory>
 #include <optional>
 #include <string>
 
 #include "agent.hpp"
+#include "camera.hpp"
 #include "game.hpp"
 #include "log.hpp"
 #include "match.hpp"
 
 namespace subbuteo {
+namespace {
+
+float kScoreBoardHeight = 9;
+
+} // namespace
 
 void LoadMatch(Configuration const &config, Game::Player offense,
                unsigned player_0_texture_index, unsigned player_1_texture_index,
-               std::shared_ptr<Scene> const &scene) {
+               Camera *camera, Scene *scene) {
+  CHECK_NOTNULL(camera);
+  CHECK_NOTNULL(scene);
+
+  camera->center.x = 0;
+  camera->center.y = kScoreBoardHeight;
+  camera->view_dimension.x = config.FieldDimension().x;
+  camera->view_dimension.y = config.FieldDimension().y + kScoreBoardHeight;
+
   // TODO: Loads the scoreboard etc.
   LoadGame(config, offense, player_0_texture_index, player_1_texture_index,
            scene);
@@ -24,37 +37,41 @@ void LoadMatch(Configuration const &config, Game::Player offense,
 
 Game::State RunMatch(AgentInterface const &agent0, AgentInterface const &agent1,
                      std::optional<std::filesystem::path> const &log_file_path,
-                     Match *match) {
+                     ControlQueue *control_queue, Scene *scene) {
+  CHECK_NOTNULL(control_queue);
+  CHECK_NOTNULL(scene);
+
   std::ofstream log_file;
   if (log_file_path.has_value()) {
     log_file.open(*log_file_path);
   }
 
-  while (Game::State::ONGOING == match->game->CurrentState()) {
+  Game game(scene);
+  while (Game::State::ONGOING == game.CurrentState()) {
     Game::Move move;
     AgentInterface::AgentId agent_id;
 
-    switch (match->game->CurrentPlayer()) {
+    switch (game.CurrentPlayer()) {
     case Game::Player::PLAYER0: {
-      move = agent0.ComputeMove(*match->game, match->control_queue.get());
+      move = agent0.ComputeMove(game, control_queue);
       agent_id = agent0.Id();
     }
     case Game::Player::PLAYER1: {
-      move = agent1.ComputeMove(*match->game, match->control_queue.get());
+      move = agent1.ComputeMove(game, control_queue);
       agent_id = agent1.Id();
     }
     default:
-      CHECK(false) << "Unknown player " << match->game->CurrentPlayer();
+      CHECK(false) << "Unknown player " << game.CurrentPlayer();
     }
 
-    LogMove(*match->game, move, agent_id, &log_file);
-    match->game->Launch(move);
+    LogMove(game, move, agent_id, &log_file);
+    game.Launch(move);
   }
 
-  LogResult(*match->game, &log_file);
+  LogResult(game, &log_file);
   log_file.close();
 
-  return match->game->CurrentState();
+  return game.CurrentState();
 }
 
 } // namespace subbuteo

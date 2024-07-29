@@ -4,12 +4,13 @@
 
 namespace subbuteo {
 
-Camera::Camera() = default;
+Camera::Camera(sf::Vector2u const &window_dimension)
+    : window_dimension(window_dimension) {}
 
-Camera::Camera(WorldPosition const &center, sf::Vector2f const &view_dimension,
-               sf::Vector2u const &window_dimension)
-    : center(center), view_dimension(view_dimension),
-      window_dimension(window_dimension) {}
+Camera::Camera(sf::Vector2u const &window_dimension,
+               WorldPosition const &center, sf::Vector2f const &view_dimension)
+    : window_dimension(window_dimension), center(center),
+      view_dimension(view_dimension) {}
 
 sf::Vector2f ComputeWindowPosition(Camera const &camera,
                                    WorldPosition const &position) {

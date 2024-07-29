@@ -31,15 +31,14 @@ void UpdateMouseDrag(sf::Event::MouseButtonEvent const &mouse_down_event,
   drag_state->value().complete = complete;
 }
 
-void PollEvents(sf::Window *window, Camera const &camera,
+bool PollEvents(sf::Window *window, Camera const &camera,
                 std::optional<DragEvent> *drag_state,
                 ControlQueue *control_queue) {
   sf::Event event;
   while (window->pollEvent(event)) {
     switch (event.type) {
     case sf::Event::Closed: {
-      window->close();
-      break;
+      return false;
     }
     case sf::Event::MouseButtonPressed: {
       UpdateMouseDrag(event.mouseButton, camera, /*complete=*/false,
@@ -80,21 +79,23 @@ void PollEvents(sf::Window *window, Camera const &camera,
     }
     }
   }
+  return true;
 }
 
 } // namespace
 
-void ListenControls(sf::RenderWindow *window,
-                    std::shared_ptr<Camera const> const &camera,
-                    std::shared_ptr<ControlQueue> const &control_queue) {
+bool ListenControls(sf::RenderWindow *window, Camera const &camera,
+                    ControlQueue *control_queue) {
   LOG(INFO) << "ListenControls: started";
 
+  bool listening = true;
   std::optional<DragEvent> drag_state;
-  while (window->isOpen()) {
-    PollEvents(window, *camera, &drag_state, control_queue.get());
+  while (listening) {
+    listening = PollEvents(window, camera, &drag_state, control_queue);
   }
 
   LOG(INFO) << "ListenControls: exiting...";
+  return true;
 }
 
 std::ostream &operator<<(std::ostream &stream, DragEvent const &drag_event) {
