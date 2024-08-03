@@ -24,10 +24,13 @@ bool Scene::Visualizable() const { return visualizable_; }
 
 void Scene::AddEntity(EntityId id, CreateBodyFn const &create_body_fn,
                       CreateDrawableFn const &create_drawable_fn) {
-  CHECK_NOTNULL(physics_world_);
-  b2Body *body = create_body_fn(physics_world_.get());
+  b2Body *body = nullptr;
   Drawable *drawable = nullptr;
-  if (visualizable_) {
+  if (create_body_fn != nullptr) {
+    CHECK_NOTNULL(physics_world_);
+    body = create_body_fn(physics_world_.get());
+  }
+  if (visualizable_ && create_drawable_fn != nullptr) {
     CHECK_NOTNULL(drawable_world_);
     drawable = create_drawable_fn(drawable_world_.get());
   }

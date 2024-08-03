@@ -7,7 +7,9 @@ set(CMAKE_CXX_STANDARD 20)
 find_package(box2d REQUIRED)
 find_package(gflags REQUIRED)
 find_package(glog REQUIRED)
-find_program(iwyu_path NAMES include-what-you-use iwyu REQUIRED)
+if(${CMAKE_BUILD_TYPE} STREQUAL Debug)
+    find_program(iwyu_path NAMES include-what-you-use iwyu REQUIRED)
+endif()
 find_package(rapidjson REQUIRED)
 find_package(SFML REQUIRED COMPONENTS
              audio
@@ -50,19 +52,15 @@ set(LIBS
 add_library(game ${SRCS})
 target_include_directories(game PUBLIC src)
 target_link_libraries(game PUBLIC ${LIBS})
-set_property(TARGET game PROPERTY CXX_INCLUDE_WHAT_YOU_USE ${iwyu_path})
+
+if(${CMAKE_BUILD_TYPE} STREQUAL Debug)
+    set_property(TARGET game PROPERTY CXX_INCLUDE_WHAT_YOU_USE ${iwyu_path})
+endif()
 
 add_executable(${PROJECT_NAME} src/game_main.cpp)
 target_include_directories(${PROJECT_NAME} PUBLIC src)
 target_link_libraries(${PROJECT_NAME} PUBLIC game)
-set_property(TARGET ${PROJECT_NAME} PROPERTY CXX_INCLUDE_WHAT_YOU_USE ${iwyu_path})
 
-# Tests.
-function(add_test TEST_NAME SOURCE_FILE_NAME)
-    add_executable(${TEST_NAME} ${SOURCE_FILE_NAME})
-    target_include_directories(${TEST_NAME} PRIVATE .)
-    target_link_libraries(${TEST_NAME}
-                          PRIVATE
-                          ${PROJECT_NAME}_standalone
-                          Boost::unit_test_framework)
-endfunction()
+if(${CMAKE_BUILD_TYPE} STREQUAL Debug)
+    set_property(TARGET ${PROJECT_NAME} PROPERTY CXX_INCLUDE_WHAT_YOU_USE ${iwyu_path})
+endif()

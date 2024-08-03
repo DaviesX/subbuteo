@@ -49,6 +49,22 @@ sf::Vector2f const &Configuration::FieldDimension() const {
   return field_dimension_;
 }
 
+sf::Texture const &Configuration::FieldTexture() const {
+  return field_texture_;
+}
+
+float Configuration::GoalWidth() const { return goal_width_; }
+
+Configuration::PhysicsParameters const &
+Configuration::FieldPhysicsParameters() const {
+  return field_params_;
+}
+
+Configuration::PhysicsParameters const &
+Configuration::FieldBoundaryPhysicsParameters() const {
+  return field_bounary_params_;
+}
+
 Configuration::PhysicsParameters const &
 Configuration::GoalKeeperPhysicsParameters() const {
   return goal_keeper_params_;

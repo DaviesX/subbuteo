@@ -1,10 +1,14 @@
+// IWYU pragma: no_include <__math/roots.h>
+
 #include <SFML/Graphics/Texture.hpp>
 #include <SFML/System/Vector2.hpp>
 #include <box2d/b2_body.h>
 #include <box2d/b2_circle_shape.h>
+#include <box2d/b2_edge_shape.h>
 #include <box2d/b2_fixture.h>
 #include <box2d/b2_math.h>
 #include <box2d/b2_world.h>
+#include <cmath>
 #include <glog/logging.h>
 #include <numbers>
 #include <ostream>
@@ -17,23 +21,13 @@ namespace subbuteo {
 namespace {
 
 Scene::EntityId const kFieldId = 387;
+Scene::EntityId const kFieldBoundaryBaseId = 28;
 Scene::EntityId const kSoccererBaseId = 9423;
-Scene::EntityId const kGoalBaseId = 4801;
 
 unsigned const kFieldLayer = 0;
 unsigned const kSoccererLayer = 1;
 
-Scene::EntityId GoalId(Game::Player player) {
-  switch (player) {
-  case Game::Player::PLAYER0:
-    return kGoalBaseId;
-  case Game::Player::PLAYER1:
-    return -kGoalBaseId;
-  default:
-    CHECK(false) << "Unknown player " << player;
-    return 0;
-  }
-}
+float const kFieldBounaryOverlap = 0.05f;
 
 Scene::EntityId GoalKeeperId(Game::Player player) {
   switch (player) {
@@ -58,6 +52,8 @@ Scene::EntityId FootBallerId(Game::Player player, unsigned index) {
     return 0;
   }
 }
+
+b2Vec2 ToB2Vec(const sf::Vector2f &v) { return b2Vec2(v.x, v.y); }
 
 std::vector<std::pair<Configuration::SoccererType, WorldPosition>>
 ToWorldPositions(
@@ -137,12 +133,14 @@ void LoadSoccerers(Game::Player player, bool offense,
 
     scene->AddEntity(
         id,
+        /*create_body_fn=*/
         [&soccerer_pos = soccerer_pos, &params](b2World *world) {
           b2BodyDef body_def;
           body_def.type = b2_dynamicBody;
-          body_def.position.Set(soccerer_pos.x, soccerer_pos.y);
+          body_def.position = ToB2Vec(soccerer_pos);
 
           b2CircleShape shape;
+          shape.m_p = ToB2Vec(soccerer_pos);
           shape.m_radius = params.radius;
 
           b2FixtureDef fixture_def;
@@ -155,6 +153,7 @@ void LoadSoccerers(Game::Player player, bool offense,
 
           return body;
         },
+        /*create_drawable_fn=*/
         [&soccerer_pos = soccerer_pos, &params, angle,
          &texture](DrawableWorld *world) {
           return world->CreateDrawable(
@@ -162,6 +161,81 @@ void LoadSoccerers(Game::Player player, bool offense,
               kSoccererLayer, angle, texture);
         });
   }
+}
+
+sf::Vector2f ComputeNormalizedDirection(sf::Vector2f const &start,
+                                        sf::Vector2f const &stop) {
+  sf::Vector2f dir = stop - start;
+  float length = std::sqrt(dir.x * dir.x + dir.y * dir.y);
+  return 1.0f / length * dir;
+}
+
+void LoadBoundary(sf::Vector2f const &start, sf::Vector2f const &stop,
+                  unsigned boundary_index, Configuration const &config,
+                  Scene *scene) {
+  scene->AddEntity(
+      kFieldBoundaryBaseId + boundary_index, /*create_body_fn=*/
+      [&start, &stop, &config](b2World *world) {
+        sf::Vector2f mid = 0.5f * (start + stop);
+
+        b2BodyDef body_def;
+        body_def.position = ToB2Vec(mid);
+
+        b2EdgeShape shape;
+        sf::Vector2f dir = ComputeNormalizedDirection(start, stop);
+        sf::Vector2f pre_start = start - kFieldBounaryOverlap * dir;
+        sf::Vector2f post_stop = stop + kFieldBounaryOverlap * dir;
+        shape.SetOneSided(ToB2Vec(pre_start), ToB2Vec(start), ToB2Vec(stop),
+                          ToB2Vec(post_stop));
+
+        b2FixtureDef fixture_def;
+        fixture_def.shape = &shape;
+        fixture_def.friction = config.FieldBoundaryPhysicsParameters().friction;
+
+        b2Body *body = world->CreateBody(&body_def);
+        body->CreateFixture(&fixture_def);
+
+        return body;
+      },
+      /*create_drawable_fn=*/nullptr);
+}
+
+void LoadField(Configuration const &config, Scene *scene) {
+  scene->AddEntity(kFieldId, /*create_body_fn=*/nullptr,
+                   /*create_drawable_fn=*/[&config](DrawableWorld *world) {
+                     return world->CreateDrawable(
+                         /*position=*/sf::Vector2f(), config.FieldDimension(),
+                         kFieldLayer,
+                         /*angle=*/0, config.FieldTexture());
+                   });
+
+  sf::Vector2f const &dimension = config.FieldDimension();
+  float goal_width = config.GoalWidth();
+
+  // Left boundary.
+  LoadBoundary(/*start=*/sf::Vector2f(-dimension.x / 2.f, -dimension.y / 2.f),
+               /*stop=*/sf::Vector2f(-dimension.x / 2.f, dimension.y / 2.f),
+               /*boundary_index=*/0, config, scene);
+  // Right boundary.
+  LoadBoundary(/*start=*/sf::Vector2f(dimension.x / 2.f, dimension.y / 2.f),
+               /*stop=*/sf::Vector2f(dimension.x / 2.f, -dimension.y / 2.f),
+               /*boundary_index=*/1, config, scene);
+  // Bottom left bounary.
+  LoadBoundary(/*start=*/sf::Vector2f(-goal_width / 2.f, -dimension.y / 2.f),
+               /*stop=*/sf::Vector2f(-dimension.x / 2.f, -dimension.y / 2.f),
+               /*boundary_index=*/2, config, scene);
+  // Bottom right bounary.
+  LoadBoundary(/*start=*/sf::Vector2f(dimension.x / 2.f, -dimension.y / 2.f),
+               /*stop=*/sf::Vector2f(goal_width / 2.f, -dimension.y / 2.f),
+               /*boundary_index=*/2, config, scene);
+  // Top left bounary.
+  LoadBoundary(/*start=*/sf::Vector2f(-goal_width / 2.f, dimension.y / 2.f),
+               /*stop=*/sf::Vector2f(-dimension.x / 2.f, dimension.y / 2.f),
+               /*boundary_index=*/2, config, scene);
+  // Top right bounary.
+  LoadBoundary(/*start=*/sf::Vector2f(dimension.x / 2.f, dimension.y / 2.f),
+               /*stop=*/sf::Vector2f(goal_width / 2.f, dimension.y / 2.f),
+               /*boundary_index=*/2, config, scene);
 }
 
 } // namespace
@@ -173,6 +247,7 @@ Game::Game(Game &&other) : scene_(nullptr) { std::swap(scene_, other.scene_); }
 void LoadGame(Configuration const &config, Game::Player offense,
               unsigned player_0_texture_index, unsigned player_1_texture_index,
               Scene *scene) {
+  LoadField(config, scene);
   LoadSoccerers(Game::Player::PLAYER0, offense == Game::PLAYER0,
                 player_0_texture_index, config, scene);
   LoadSoccerers(Game::Player::PLAYER1, offense == Game::PLAYER1,

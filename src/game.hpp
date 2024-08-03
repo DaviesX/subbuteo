@@ -2,7 +2,6 @@
 
 // IWYU pragma: no_include <SFML/System/Vector2.inl>
 
-#include <memory>
 #include <vector>
 
 #include "config.hpp"

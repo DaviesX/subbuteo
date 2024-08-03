@@ -8,14 +8,13 @@
     },
     "goal": {
         "width": 7.32,
-        "height": 2.44,
-        "file": "goal.png"
+        "height": 2.44
     },
     "launch": {
         "min_force": 0.0,
         "max_force": 1.0,
-        "uncertainty_force": 0.1,
-        "uncertainty_angle": 0.2
+        "uncertainty_force": 0.01,
+        "uncertainty_angle": 0.01
     },
     "goal_keeper": {
         "radius": 1.75,
