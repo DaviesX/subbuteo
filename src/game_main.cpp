@@ -1,6 +1,7 @@
 #include <gflags/gflags.h>
 #include <glog/logging.h>
 #include <memory>
+#include <ostream>
 
 #include "game_flow.hpp"
 
@@ -18,6 +19,7 @@ int main(int argc, char *argv[]) {
   gflags::ParseCommandLineFlags(&argc, &argv, /*remove_flags=*/true);
   google::InitGoogleLogging(argv[0]);
 
+  LOG(INFO) << "Creating game flow...";
   std::unique_ptr<subbuteo::GameFlowInterface> game_flow;
   if (FLAGS_match_count > 0 && FLAGS_log_generator_mode) {
     game_flow = std::make_unique<subbuteo::LogGeneratorGameFlow>();
@@ -25,5 +27,6 @@ int main(int argc, char *argv[]) {
     game_flow = std::make_unique<subbuteo::InteractiveGameFlow>();
   }
 
+  LOG(INFO) << "Running game flow...";
   return game_flow->Run();
 }

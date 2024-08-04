@@ -1,9 +1,11 @@
 {
     "version": "202406291344",
+    "team_size": 6,
     "field": {
         "width": 45.0,
         "length": 90.0,
-        "friction": 0.1,
+        "floor_friction": 0.1,
+        "boundary_friction": 0.3,
         "file": "soccer_field.png"
     },
     "goal": {
@@ -19,12 +21,14 @@
     "goal_keeper": {
         "radius": 1.75,
         "density": 1.0,
+        "friction": 0.1,
         "file_glob": "soccerer_*.jpg"
     },
     "foot_baller": {
         "radius": 1.0,
         "density": 1.0,
-        "file_glob": "soccerer_*.jpg"
+        "friction": 0.1,
+        "file_glob": "soccerer_.+.jpg"
     },
     "offense_positions": [
         {

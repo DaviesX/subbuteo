@@ -11,17 +11,25 @@ namespace subbuteo {
 class Configuration {
 public:
   enum SoccererType {
+    INVALID,
     FOOT_BALLER,
     GOAL_KEEPER,
   };
 
   struct PhysicsParameters {
+    PhysicsParameters();
+    PhysicsParameters(float radius, float density, float friction);
+
     float radius;
     float density;
     float friction;
   };
 
   struct FieldPosition {
+    FieldPosition();
+    FieldPosition(SoccererType soccerer_type, float from_left,
+                  float from_central);
+
     SoccererType soccerer_type;
     float from_left;
     float from_central;
