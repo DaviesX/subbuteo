@@ -1,6 +1,7 @@
 #pragma once
 
 #include <SFML/Graphics/RenderWindow.hpp>
+#include <memory>
 
 #include "camera.hpp"
 #include "config.hpp"
@@ -9,17 +10,25 @@
 
 namespace subbuteo {
 
+class AgentInterface;
+
 class GameFlowInterface {
 public:
-  GameFlowInterface();
+  GameFlowInterface(std::unique_ptr<AgentInterface> &&agent0,
+                    std::unique_ptr<AgentInterface> &&agent1);
   virtual ~GameFlowInterface();
 
   virtual int Run() = 0;
+
+protected:
+  std::unique_ptr<AgentInterface> agent0_;
+  std::unique_ptr<AgentInterface> agent1_;
 };
 
 class InteractiveGameFlow final : public GameFlowInterface {
 public:
-  InteractiveGameFlow();
+  InteractiveGameFlow(std::unique_ptr<AgentInterface> &&agent0,
+                      std::unique_ptr<AgentInterface> &&agent1);
   ~InteractiveGameFlow() override;
 
   int Run() override;
@@ -35,7 +44,8 @@ private:
 
 class LogGeneratorGameFlow final : public GameFlowInterface {
 public:
-  LogGeneratorGameFlow();
+  LogGeneratorGameFlow(std::unique_ptr<AgentInterface> &&agen0,
+                       std::unique_ptr<AgentInterface> &&agent1);
   ~LogGeneratorGameFlow() override;
 
   int Run() override;

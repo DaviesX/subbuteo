@@ -3,9 +3,12 @@
 #include <SFML/Window/VideoMode.hpp>
 #include <filesystem>
 #include <glog/logging.h>
+#include <memory>
 #include <ostream>
 #include <thread>
+#include <utility>
 
+#include "agent.hpp"
 #include "control.hpp"
 #include "draw.hpp"
 #include "game_flow.hpp"
@@ -20,11 +23,17 @@ char const *kResourcePath = "./resource";
 
 } // namespace
 
-GameFlowInterface::GameFlowInterface() = default;
+GameFlowInterface::GameFlowInterface(std::unique_ptr<AgentInterface> &&agent0,
+                                     std::unique_ptr<AgentInterface> &&agent1)
+    : agent0_(std::move(agent0)), agent1_(std::move(agent1)) {}
+
 GameFlowInterface::~GameFlowInterface() = default;
 
-InteractiveGameFlow::InteractiveGameFlow()
-    : window_({kWindowWidth, kWindowHeight}, kWindowTitle),
+InteractiveGameFlow::InteractiveGameFlow(
+    std::unique_ptr<AgentInterface> &&agent0,
+    std::unique_ptr<AgentInterface> &&agent1)
+    : GameFlowInterface(std::move(agent0), std::move(agent1)),
+      window_({kWindowWidth, kWindowHeight}, kWindowTitle),
       config_(kResourcePath), camera_(window_.getSize()),
       scene_(/*visualizable=*/true), close_event_(false) {}
 
@@ -54,7 +63,11 @@ int InteractiveGameFlow::Run() {
   return 0;
 }
 
-LogGeneratorGameFlow::LogGeneratorGameFlow() = default;
+LogGeneratorGameFlow::LogGeneratorGameFlow(
+    std::unique_ptr<AgentInterface> &&agent0,
+    std::unique_ptr<AgentInterface> &&agent1)
+    : GameFlowInterface(std::move(agent0), std::move(agent1)) {}
+
 LogGeneratorGameFlow::~LogGeneratorGameFlow() = default;
 
 int LogGeneratorGameFlow::Run() {

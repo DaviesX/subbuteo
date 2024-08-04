@@ -17,8 +17,9 @@ sf::Vector2f ComputeWindowPosition(Camera const &camera,
   sf::Vector2f view_pos = position - camera.center;
   view_pos += 0.5f * camera.view_dimension;
 
-  float wx = view_pos.x * camera.window_dimension.x / camera.view_dimension.x;
-  float wy = view_pos.y * camera.window_dimension.y / camera.view_dimension.y;
+  float wx = camera.window_dimension.x * view_pos.x / camera.view_dimension.x;
+  float wy =
+      camera.window_dimension.y * (1.f - view_pos.y / camera.view_dimension.y);
 
   return sf::Vector2f(wx, wy);
 }
