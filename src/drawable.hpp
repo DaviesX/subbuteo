@@ -67,12 +67,12 @@ struct Drawable {
 
 class DrawableWorld {
 public:
-  DrawableWorld(std::vector<std::unique_ptr<MaterialInterface>> &&materials);
-
   Drawable *CreateDrawable(WorldPosition const &position,
                            sf::Vector2f const &dimension, unsigned layer,
                            float angle, sf::Texture const &texture);
   std::vector<Drawable *> Drawables() const;
+  void ClearDrawables();
+  void AddMaterial(std::unique_ptr<MaterialInterface> &&material);
   MaterialInterface *Material(MaterialName const &name) const;
 
 private:

@@ -4,6 +4,7 @@
 #include <cstdint>
 #include <functional>
 #include <memory>
+#include <shared_mutex>
 #include <unordered_map>
 
 #include "drawable.hpp"
@@ -20,23 +21,26 @@ public:
   using CreateDrawableFn = std::function<Drawable *(DrawableWorld *world)>;
 
   struct Entity {
-    Entity(b2Body *body, Drawable *drawable) : body(body), drawable(drawable) {}
+    Entity(b2Body *body,  Drawable *drawable)
+        : body(body), drawable(drawable) {}
 
     b2Body *body;
     Drawable *drawable;
   };
 
   Scene(bool visualizable);
-  Scene(Scene const &other);
+  Scene(Scene const &) = delete;
 
   bool Visualizable() const;
   void AddEntity(EntityId id, CreateBodyFn const &create_body_fn,
                  CreateDrawableFn const &create_drawable_fn);
   Entity GetEntity(EntityId id) const;
-  std::unordered_map<EntityId, Entity> const &Entities() const;
+  std::unordered_map<EntityId, Entity> Entities() const;
+  void Clear();
   void Step();
 
 private:
+  std::shared_mutex mu_;
   bool const visualizable_;
   std::unordered_map<EntityId, Entity> entities_;
   std::unique_ptr<b2World> physics_world_;

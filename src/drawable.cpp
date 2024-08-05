@@ -30,18 +30,6 @@ Drawable::Drawable(WorldPosition const &position, sf::Vector2f const &dimension,
     : position(position), dimension(dimension), layer(layer), angle(angle),
       texture(texture), material(nullptr) {}
 
-DrawableWorld::DrawableWorld(
-    std::vector<std::unique_ptr<MaterialInterface>> &&materials) {
-  materials_.reserve(materials.size());
-  for (auto &&material : materials) {
-    MaterialName name = material->name;
-    bool inserted =
-        materials_.insert(std::make_pair(name, std::move(material))).second;
-    CHECK(inserted) << "Material with name " << name
-                    << " has already been added.";
-  }
-}
-
 Drawable *DrawableWorld::CreateDrawable(WorldPosition const &position,
                                         sf::Vector2f const &dimension,
                                         unsigned layer, float angle,
@@ -59,6 +47,16 @@ std::vector<Drawable *> DrawableWorld::Drawables() const {
     result.push_back(drawable.get());
   }
   return result;
+}
+
+void DrawableWorld::ClearDrawables() { drawables_.clear(); }
+
+void DrawableWorld::AddMaterial(std::unique_ptr<MaterialInterface> &&material) {
+  MaterialName name = material->name;
+  bool inserted =
+      materials_.insert(std::make_pair(name, std::move(material))).second;
+  CHECK(inserted) << "Material with name " << name
+                  << " has already been added.";
 }
 
 MaterialInterface *DrawableWorld::Material(MaterialName const &name) const {

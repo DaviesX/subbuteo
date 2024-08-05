@@ -85,7 +85,7 @@ ToWorldPositions(
 }
 
 void LoadSoccerers(Game::Player player, bool offense,
-                   unsigned player_texture_index, Configuration const &config,
+                   unsigned player_params_index, Configuration const &config,
                    Scene *scene) {
   std::vector<std::pair<Configuration::SoccererType, WorldPosition>>
       soccerer_positions;
@@ -98,9 +98,9 @@ void LoadSoccerers(Game::Player player, bool offense,
                                           config.FieldDimension(), player);
   }
 
-  CHECK_LT(player_texture_index, config.AvailableSoccererTextures().size());
+  CHECK_LT(player_params_index, config.AvailableSoccererTextures().size());
   const sf::Texture &texture =
-      config.AvailableSoccererTextures()[player_texture_index];
+      config.AvailableSoccererTextures()[player_params_index];
 
   unsigned soccerer_index = 0;
   for (auto const &[soccerer_type, soccerer_pos] : soccerer_positions) {
@@ -110,9 +110,11 @@ void LoadSoccerers(Game::Player player, bool offense,
     case Configuration::SoccererType::FOOT_BALLER:
       id = FootBallerId(player, soccerer_index++);
       params = config.FootballerPhysicsParameters();
+      break;
     case Configuration::SoccererType::GOAL_KEEPER:
       id = GoalKeeperId(player);
       params = config.GoalKeeperPhysicsParameters();
+      break;
     default:
       CHECK(false) << "Unknown soccerer type " << soccerer_type;
       id = 0;
@@ -227,15 +229,15 @@ void LoadField(Configuration const &config, Scene *scene) {
   // Bottom right bounary.
   LoadBoundary(/*start=*/sf::Vector2f(dimension.x / 2.f, -dimension.y / 2.f),
                /*stop=*/sf::Vector2f(goal_width / 2.f, -dimension.y / 2.f),
-               /*boundary_index=*/2, config, scene);
+               /*boundary_index=*/3, config, scene);
   // Top left bounary.
   LoadBoundary(/*start=*/sf::Vector2f(-goal_width / 2.f, dimension.y / 2.f),
                /*stop=*/sf::Vector2f(-dimension.x / 2.f, dimension.y / 2.f),
-               /*boundary_index=*/2, config, scene);
+               /*boundary_index=*/4, config, scene);
   // Top right bounary.
   LoadBoundary(/*start=*/sf::Vector2f(dimension.x / 2.f, dimension.y / 2.f),
                /*stop=*/sf::Vector2f(goal_width / 2.f, dimension.y / 2.f),
-               /*boundary_index=*/2, config, scene);
+               /*boundary_index=*/5, config, scene);
 }
 
 } // namespace
@@ -244,14 +246,26 @@ Game::Game(Scene const *scene) : scene_(scene) {}
 
 Game::Game(Game &&other) : scene_(nullptr) { std::swap(scene_, other.scene_); }
 
+void Game::Launch(Move const &move) {}
+
+unsigned Game::CurrentRound() const {}
+
+Game::State Game::CurrentState() const {}
+
+Game::Player Game::CurrentPlayer() const {}
+
+std::vector<Game::Soccerer> Game::CurrentSoccerers() const {}
+
+WorldPosition Game::CurrentBall() const {}
+
 void LoadGame(Configuration const &config, Game::Player offense,
-              unsigned player_0_texture_index, unsigned player_1_texture_index,
+              unsigned player_0_params_index, unsigned player_1_params_index,
               Scene *scene) {
   LoadField(config, scene);
   LoadSoccerers(Game::Player::PLAYER0, offense == Game::PLAYER0,
-                player_0_texture_index, config, scene);
+                player_0_params_index, config, scene);
   LoadSoccerers(Game::Player::PLAYER1, offense == Game::PLAYER1,
-                player_1_texture_index, config, scene);
+                player_1_params_index, config, scene);
 }
 
 } // namespace subbuteo

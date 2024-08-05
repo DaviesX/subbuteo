@@ -1,6 +1,6 @@
 #pragma once
 
-#include <fstream>
+// IWYU pragma: no_include <__fwd/fstream.h>
 
 #include "agent.hpp"
 #include "game.hpp"

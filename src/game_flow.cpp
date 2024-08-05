@@ -1,17 +1,22 @@
 
+#include <SFML/Graphics/Texture.hpp>
 #include <SFML/System/String.hpp>
 #include <SFML/Window/VideoMode.hpp>
 #include <filesystem>
+#include <functional>
 #include <glog/logging.h>
 #include <memory>
 #include <ostream>
 #include <thread>
 #include <utility>
+#include <vector>
 
 #include "agent.hpp"
 #include "control.hpp"
 #include "draw.hpp"
+#include "game.hpp"
 #include "game_flow.hpp"
+#include "match.hpp"
 
 namespace subbuteo {
 namespace {
@@ -20,6 +25,39 @@ unsigned const kWindowWidth = 505u;
 unsigned const kWindowHeight = 672u;
 char const *kWindowTitle = "Subbuteo";
 char const *kResourcePath = "./resource";
+
+void DoInterfactiveMatchOpponent(Configuration const &config, Scene *scene,
+                                 unsigned *player_0_params_index,
+                                 unsigned *player_1_params_index) {
+  scene->Clear();
+  CHECK_GE(config.AvailableSoccererTextures().size(), 2);
+  *player_0_params_index = 0;
+  *player_1_params_index = 1;
+}
+
+void DoInteractivePickOffendingPlayer(Scene *scene, Game::Player *offense) {
+  scene->Clear();
+  *offense = Game::Player::PLAYER0;
+}
+
+void DoInteractiveMatch(Configuration const &config, Camera *camera,
+                        ControlQueue *control_queue, Scene *scene) {
+  LOG(INFO) << "Matching opponents...";
+  unsigned player_0_params_index;
+  unsigned player_1_params_index;
+  DoInterfactiveMatchOpponent(config, scene, &player_0_params_index,
+                              &player_1_params_index);
+
+  LOG(INFO) << "Picking offending player...";
+  Game::Player offense;
+  DoInteractivePickOffendingPlayer(scene, &offense);
+
+  LOG(INFO) << "Loading match...";
+  LoadMatch(config, offense, player_0_params_index, player_1_params_index,
+            camera, scene);
+
+  LOG(INFO) << "Staring match...";
+}
 
 } // namespace
 
@@ -46,12 +84,19 @@ int InteractiveGameFlow::Run() {
 
   LOG(INFO) << "Launching drawing thread...";
   window_.setActive(false);
-  std::thread drawing_thread(subbuteo::DrawScene, scene_, camera_,
+  std::thread drawing_thread(DrawScene, std::cref(scene_), std::cref(camera_),
                              &close_event_, &window_);
 
+  LOG(INFO) << "Launching matching thread...";
+  std::thread match_thread(DoInteractiveMatch, std::cref(config_), &camera_,
+                           &control_queue_, &scene_);
+
   LOG(INFO) << "Listening controls...";
-  close_event_ = subbuteo::ListenControls(&window_, camera_, &control_queue_);
+  close_event_ = ListenControls(&window_, std::cref(camera_), &control_queue_);
   CHECK(close_event_) << "Error listening to controls.";
+
+  LOG(INFO) << "Waiting for matching thread to terminate...";
+  match_thread.join();
 
   LOG(INFO) << "Waiting for drawing thread to terminate...";
   drawing_thread.join();

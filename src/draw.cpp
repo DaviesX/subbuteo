@@ -16,6 +16,8 @@
 namespace subbuteo {
 namespace {
 
+unsigned const kFrameRateLimit = 30;
+
 std::vector<Drawable const *> ToSortedDrawables(const Scene &scene) {
   std::vector<Drawable const *> result;
   result.reserve(scene.Entities().size());
@@ -43,6 +45,7 @@ void DrawScene(Scene const &scene, Camera const &camera,
     return;
   }
 
+  window->setFramerateLimit(kFrameRateLimit);
   while (!*close_event) {
     window->clear(sf::Color::White);
 

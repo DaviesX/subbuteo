@@ -49,7 +49,7 @@ private:
 };
 
 void LoadGame(Configuration const &config, Game::Player offense,
-              unsigned player_0_texture_index, unsigned player_1_texture_index,
+              unsigned player_0_params_index, unsigned player_1_params_index,
               Scene *scene);
 
 } // namespace subbuteo

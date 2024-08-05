@@ -20,7 +20,7 @@ float kScoreBoardHeight = 9;
 } // namespace
 
 void LoadMatch(Configuration const &config, Game::Player offense,
-               unsigned player_0_texture_index, unsigned player_1_texture_index,
+               unsigned player_0_params_index, unsigned player_1_params_index,
                Camera *camera, Scene *scene) {
   CHECK_NOTNULL(camera);
   CHECK_NOTNULL(scene);
@@ -31,7 +31,7 @@ void LoadMatch(Configuration const &config, Game::Player offense,
   camera->view_dimension.y = config.FieldDimension().y + kScoreBoardHeight;
 
   // TODO: Loads the scoreboard etc.
-  LoadGame(config, offense, player_0_texture_index, player_1_texture_index,
+  LoadGame(config, offense, player_0_params_index, player_1_params_index,
            scene);
 }
 
