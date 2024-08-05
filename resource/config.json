@@ -1,9 +1,18 @@
 {
     "version": "202406291344",
     "team_size": 6,
+    "screen_resolution": {
+        "width": 522,
+        "height": 800
+    },
+    "score_board": {
+        "height": 9.0,
+        "file": "score_board.png",
+        "digit_file_glob": "score_board_.+.png"
+    },
     "field": {
         "width": 45.0,
-        "length": 90.0,
+        "length": 60.0,
         "floor_friction": 0.1,
         "boundary_friction": 0.3,
         "file": "soccer_field.png"
@@ -12,12 +21,6 @@
         "width": 7.32,
         "height": 2.44
     },
-    "launch": {
-        "min_force": 0.0,
-        "max_force": 1.0,
-        "uncertainty_force": 0.01,
-        "uncertainty_angle": 0.01
-    },
     "goal_keeper": {
         "radius": 1.75,
         "density": 1.0,
@@ -25,10 +28,20 @@
         "file_glob": "soccerer_*.jpg"
     },
     "foot_baller": {
-        "radius": 1.0,
+        "radius": 1.25,
         "density": 1.0,
         "friction": 0.1,
         "file_glob": "soccerer_.+.jpg"
+    },
+    "ball": {
+        "radius": 1.0,
+        "density": 0.1
+    },
+    "launch": {
+        "min_force": 0.0,
+        "max_force": 1.0,
+        "uncertainty_force": 0.01,
+        "uncertainty_angle": 0.01
     },
     "offense_positions": [
         {
@@ -65,7 +78,7 @@
             "id": 5,
             "type": "goal_keeper",
             "from_left": 0.5,
-            "from_central": 1.0
+            "from_central": 0.93
         }
     ],
     "defense_positions": [
@@ -90,20 +103,20 @@
         {
             "id": 3,
             "type": "foot_baller",
-            "from_left": 0.75,
-            "from_central": 0.4
+            "from_left": 0.4,
+            "from_central": 0.75
         },
         {
             "id": 4,
             "type": "foot_baller",
-            "from_left": 0.75,
-            "from_central": 0.6
+            "from_left": 0.6,
+            "from_central": 0.75
         },
         {
             "id": 5,
             "type": "goal_keeper",
             "from_left": 0.5,
-            "from_central": 1.0
+            "from_central": 0.93
         }
     ]
 }

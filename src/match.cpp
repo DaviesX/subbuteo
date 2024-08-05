@@ -26,7 +26,7 @@ void LoadMatch(Configuration const &config, Game::Player offense,
   CHECK_NOTNULL(scene);
 
   camera->center.x = 0;
-  camera->center.y = kScoreBoardHeight;
+  camera->center.y = kScoreBoardHeight / 2;
   camera->view_dimension.x = config.FieldDimension().x;
   camera->view_dimension.y = config.FieldDimension().y + kScoreBoardHeight;
 

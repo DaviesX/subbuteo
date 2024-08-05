@@ -21,8 +21,8 @@
 namespace subbuteo {
 namespace {
 
-unsigned const kWindowWidth = 505u;
-unsigned const kWindowHeight = 672u;
+unsigned const kWindowWidth = 522u;
+unsigned const kWindowHeight = 800u;
 char const *kWindowTitle = "Subbuteo";
 char const *kResourcePath = "./resource";
 

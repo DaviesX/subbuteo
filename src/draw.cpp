@@ -1,7 +1,9 @@
+// IWYU pragma: no_include <SFML/System/Vector2.inl>
 #include <SFML/Graphics/Color.hpp>
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Graphics/Sprite.hpp>
 #include <SFML/Graphics/Texture.hpp>
+#include <SFML/System/Vector2.hpp>
 #include <algorithm>
 #include <glog/logging.h>
 #include <ostream>
@@ -47,14 +49,20 @@ void DrawScene(Scene const &scene, Camera const &camera,
 
   window->setFramerateLimit(kFrameRateLimit);
   while (!*close_event) {
-    window->clear(sf::Color::White);
+    window->clear(sf::Color::Transparent);
 
     std::vector<Drawable const *> drawables = ToSortedDrawables(scene);
     for (auto drawable : drawables) {
       sf::Sprite sprite(drawable->texture);
-      sprite.setPosition(ComputeWindowPosition(camera, drawable->position));
-      sprite.setScale(ComputeWindowScale(camera, drawable->dimension,
-                                         drawable->texture.getSize()));
+
+      sf::Vector2f scale = ComputeWindowScale(camera, drawable->dimension,
+                                              drawable->texture.getSize());
+      sf::Vector2f center = ComputeWindowPosition(camera, drawable->position);
+      sf::Vector2f top_left_pos(
+          center.x - 0.5f * scale.x * drawable->texture.getSize().x,
+          center.y - 0.5f * scale.y * drawable->texture.getSize().y);
+      sprite.setPosition(top_left_pos);
+      sprite.setScale(scale);
       sprite.setRotation(drawable->angle);
       window->draw(sprite);
 
