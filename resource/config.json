@@ -25,13 +25,13 @@
         "radius": 1.75,
         "density": 1.0,
         "friction": 0.1,
-        "file_glob": "soccerer_*.jpg"
+        "file_glob": "soccerer_.+.png"
     },
     "foot_baller": {
         "radius": 1.25,
         "density": 1.0,
         "friction": 0.1,
-        "file_glob": "soccerer_.+.jpg"
+        "file_glob": "soccerer_.+.png"
     },
     "ball": {
         "radius": 1.0,
