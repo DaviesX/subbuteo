@@ -40,9 +40,11 @@ public:
 
   std::string const &Version() const;
   unsigned TeamSize() const;
+  sf::Texture const &BallTexture() const;
   sf::Vector2f const &FieldDimension() const;
   sf::Texture const &FieldTexture() const;
   float GoalWidth() const;
+  PhysicsParameters const &BallPhysicsParameters() const;
   PhysicsParameters const &FieldPhysicsParameters() const;
   PhysicsParameters const &FieldBoundaryPhysicsParameters() const;
   PhysicsParameters const &GoalKeeperPhysicsParameters() const;
@@ -54,9 +56,11 @@ public:
 private:
   std::string version_;
   unsigned team_size_;
+  sf::Texture ball_texture_;
   sf::Vector2f field_dimension_;
   sf::Texture field_texture_;
   float goal_width_;
+  PhysicsParameters ball_params_;
   PhysicsParameters field_params_;
   PhysicsParameters field_bounary_params_;
   PhysicsParameters goal_keeper_params_;

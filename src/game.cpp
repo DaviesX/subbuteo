@@ -20,12 +20,14 @@
 namespace subbuteo {
 namespace {
 
+Scene::EntityId const kBallId = 1387;
 Scene::EntityId const kFieldId = 387;
 Scene::EntityId const kFieldBoundaryBaseId = 28;
 Scene::EntityId const kSoccererBaseId = 9423;
 
 unsigned const kFieldLayer = 0;
 unsigned const kSoccererLayer = 1;
+unsigned const kBallLayer = 1;
 
 float const kFieldBounaryOverlap = 0.05f;
 
@@ -172,6 +174,41 @@ sf::Vector2f ComputeNormalizedDirection(sf::Vector2f const &start,
   return 1.0f / length * dir;
 }
 
+void LoadBall(Configuration const &config, Scene *scene) {
+  Configuration::PhysicsParameters const &params =
+      config.BallPhysicsParameters();
+
+  scene->AddEntity(
+      kBallId, /*create_body_fn=*/
+      [&config, &params](b2World *world) {
+        b2BodyDef body_def;
+        body_def.type = b2_dynamicBody;
+        body_def.position = b2Vec2(0, 0);
+
+        b2CircleShape shape;
+        shape.m_p = b2Vec2(0, 0);
+        shape.m_radius = params.radius;
+
+        b2FixtureDef fixture_def;
+        fixture_def.shape = &shape;
+        fixture_def.density = params.density;
+        fixture_def.friction = params.friction;
+
+        b2Body *body = world->CreateBody(&body_def);
+        body->CreateFixture(&fixture_def);
+
+        return body;
+      },
+      /*create_drawable_fn=*/
+      [&config, &params](DrawableWorld *world) {
+        return world->CreateDrawable(
+            /*position=*/sf::Vector2f(),
+            sf::Vector2f(params.radius * 2, params.radius * 2), kBallLayer,
+            /*angle=*/0, config.BallTexture());
+      });
+  config.AvailableSoccererTextures();
+}
+
 void LoadBoundary(sf::Vector2f const &start, sf::Vector2f const &stop,
                   unsigned boundary_index, Configuration const &config,
                   Scene *scene) {
@@ -261,6 +298,7 @@ WorldPosition Game::CurrentBall() const {}
 void LoadGame(Configuration const &config, Game::Player offense,
               unsigned player_0_params_index, unsigned player_1_params_index,
               Scene *scene) {
+  LoadBall(config, scene);
   LoadField(config, scene);
   LoadSoccerers(Game::Player::PLAYER0, offense == Game::PLAYER0,
                 player_0_params_index, config, scene);

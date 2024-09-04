@@ -93,6 +93,16 @@ Configuration::Configuration(std::filesystem::path const &resource_path) {
   version_ = config["version"].GetString();
   team_size_ = config["team_size"].GetInt();
 
+  rapidjson::Value ball_config = config["ball"].GetObject();
+  ball_params_ =
+      PhysicsParameters(/*radius=*/ball_config["radius"].GetFloat(),
+                        /*density=*/ball_config["density"].GetFloat(),
+                        /*friction=*/ball_config["friction"].GetFloat());
+  sf::Texture ball_texture;
+  CHECK(ball_texture.loadFromFile(
+      (resource_path / ball_config["file"].GetString()).string()));
+  ball_texture_ = std::move(ball_texture);
+
   rapidjson::Value field_config = config["field"].GetObject();
   field_dimension_ = sf::Vector2f(field_config["width"].GetFloat(),
                                   field_config["length"].GetFloat());
@@ -143,6 +153,8 @@ std::string const &Configuration::Version() const { return version_; }
 
 unsigned Configuration::TeamSize() const { return team_size_; }
 
+sf::Texture const &Configuration::BallTexture() const { return ball_texture_; }
+
 sf::Vector2f const &Configuration::FieldDimension() const {
   return field_dimension_;
 }
@@ -152,6 +164,11 @@ sf::Texture const &Configuration::FieldTexture() const {
 }
 
 float Configuration::GoalWidth() const { return goal_width_; }
+
+Configuration::PhysicsParameters const &
+Configuration::BallPhysicsParameters() const {
+  return ball_params_;
+}
 
 Configuration::PhysicsParameters const &
 Configuration::FieldPhysicsParameters() const {
