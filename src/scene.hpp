@@ -21,8 +21,7 @@ public:
   using CreateDrawableFn = std::function<Drawable *(DrawableWorld *world)>;
 
   struct Entity {
-    Entity(b2Body *body,  Drawable *drawable)
-        : body(body), drawable(drawable) {}
+    Entity(b2Body *body, Drawable *drawable) : body(body), drawable(drawable) {}
 
     b2Body *body;
     Drawable *drawable;
@@ -38,6 +37,7 @@ public:
   std::unordered_map<EntityId, Entity> Entities() const;
   void Clear();
   void Step();
+  bool Stable(unsigned min_stable_steps) const;
 
 private:
   std::shared_mutex mu_;
@@ -45,6 +45,7 @@ private:
   std::unordered_map<EntityId, Entity> entities_;
   std::unique_ptr<b2World> physics_world_;
   std::unique_ptr<DrawableWorld> drawable_world_;
+  unsigned num_stable_steps_;
 };
 
 } // namespace subbuteo

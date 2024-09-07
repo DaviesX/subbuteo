@@ -16,16 +16,16 @@ size_t const kExpectedNumEntities = 20;
 float const kTimeStep = 1.f / 60.f;
 int32 const kVelocityIterations = 6;
 int32 const kPositionIterations = 2;
+float const kMaxStableSpeed = 1e-3f;
 
 } // namespace
 
 Scene::Scene(bool visualizable)
     : visualizable_(visualizable),
       physics_world_(std::make_unique<b2World>(b2Vec2(0, 0))),
-      drawable_world_(std::make_unique<DrawableWorld>()) {
+      drawable_world_(std::make_unique<DrawableWorld>()), num_stable_steps_(0) {
   entities_.reserve(kExpectedNumEntities);
 }
-
 
 bool Scene::Visualizable() const { return visualizable_; }
 
@@ -80,7 +80,15 @@ void Scene::Step() {
   }
 
   std::unique_lock lock(mu_);
+
+  bool stable = true;
   for (auto &[_, entity] : entities_) {
+    if (entity.body != nullptr &&
+        entity.body->GetLinearVelocity().Length() > kMaxStableSpeed) {
+      stable = false;
+      break;
+    }
+
     if (entity.body != nullptr && entity.drawable != nullptr) {
       b2Vec2 pos = entity.body->GetPosition();
       float angle = entity.body->GetAngle();
@@ -89,6 +97,16 @@ void Scene::Step() {
       entity.drawable->angle = angle;
     }
   }
+
+  if (stable) {
+    ++num_stable_steps_;
+  } else {
+    num_stable_steps_ = 0;
+  }
+}
+
+bool Scene::Stable(unsigned min_stable_steps) const {
+  return num_stable_steps_ >= min_stable_steps;
 }
 
 } // namespace subbuteo

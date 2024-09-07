@@ -1,4 +1,5 @@
 // IWYU pragma: no_include <__math/roots.h>
+// IWYU pragma: no_include <__math/trigonometric_functions.h>
 
 #include <SFML/Graphics/Texture.hpp>
 #include <SFML/System/Vector2.hpp>
@@ -30,6 +31,9 @@ unsigned const kSoccererLayer = 1;
 unsigned const kBallLayer = 1;
 
 float const kFieldBounaryOverlap = 0.05f;
+
+unsigned const kMinStableSteps = 5;
+float const kMaxImpulse = 10;
 
 Scene::EntityId GoalKeeperId(Game::Player player) {
   switch (player) {
@@ -279,11 +283,21 @@ void LoadField(Configuration const &config, Scene *scene) {
 
 } // namespace
 
-Game::Game(Scene const *scene) : scene_(scene) {}
+Game::Game(Scene *scene) : scene_(scene) {}
 
 Game::Game(Game &&other) : scene_(nullptr) { std::swap(scene_, other.scene_); }
 
-void Game::Launch(Move const &move) {}
+void Game::Launch(Move const &move) {
+  Scene::Entity soccerer = scene_->GetEntity(move.id);
+
+  b2Vec2 dir(std::cos(move.angle), std::sin(move.angle));
+  b2Vec2 impulse = move.power * kMaxImpulse * dir;
+  soccerer.body->ApplyLinearImpulseToCenter(impulse, /*wake=*/true);
+
+  do {
+    scene_->Step();
+  } while (!scene_->Stable(kMinStableSteps));
+}
 
 unsigned Game::CurrentRound() const {}
 

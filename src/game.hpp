@@ -33,7 +33,7 @@ public:
     float power;
   };
 
-  Game(Scene const *scene);
+  Game(Scene *scene);
   Game(Game &&other);
   Game(Game const &) = delete;
 
@@ -45,7 +45,7 @@ public:
   WorldPosition CurrentBall() const;
 
 private:
-  Scene const *scene_;
+  Scene *scene_;
 };
 
 void LoadGame(Configuration const &config, Game::Player offense,
