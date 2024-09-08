@@ -31,47 +31,46 @@ void LoadMatch(Configuration const &config, Game::Player offense,
   camera->view_dimension.y = config.FieldDimension().y + kScoreBoardHeight;
 
   // TODO: Loads the scoreboard etc.
-  LoadGame(config, offense, player_0_params_index, player_1_params_index,
-           scene);
+  return LoadGameScene(config, offense, player_0_params_index,
+                       player_1_params_index, scene);
 }
 
 Game::State RunMatch(AgentInterface const &agent0, AgentInterface const &agent1,
                      std::optional<std::filesystem::path> const &log_file_path,
-                     ControlQueue *control_queue, Scene *scene) {
+                     ControlQueue *control_queue, Game *game) {
   CHECK_NOTNULL(control_queue);
-  CHECK_NOTNULL(scene);
+  CHECK_NOTNULL(game);
 
   std::ofstream log_file;
   if (log_file_path.has_value()) {
     log_file.open(*log_file_path);
   }
 
-  Game game(scene);
-  while (Game::State::ONGOING == game.CurrentState()) {
+  while (Game::State::ONGOING == game->CurrentState()) {
     Game::Move move;
     AgentInterface::AgentId agent_id;
 
-    switch (game.CurrentPlayer()) {
+    switch (game->CurrentPlayer()) {
     case Game::Player::PLAYER0: {
-      move = agent0.ComputeMove(game, control_queue);
+      move = agent0.ComputeMove(*game, control_queue);
       agent_id = agent0.Id();
     }
     case Game::Player::PLAYER1: {
-      move = agent1.ComputeMove(game, control_queue);
+      move = agent1.ComputeMove(*game, control_queue);
       agent_id = agent1.Id();
     }
     default:
-      CHECK(false) << "Unknown player " << game.CurrentPlayer();
+      CHECK(false) << "Unknown player " << game->CurrentPlayer();
     }
 
-    LogMove(game, move, agent_id, &log_file);
-    game.Launch(move);
+    LogMove(*game, move, agent_id, &log_file);
+    game->Launch(move);
   }
 
-  LogResult(game, &log_file);
+  LogResult(*game, &log_file);
   log_file.close();
 
-  return game.CurrentState();
+  return game->CurrentState();
 }
 
 } // namespace subbuteo

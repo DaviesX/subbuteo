@@ -1,5 +1,6 @@
 // IWYU pragma: no_include <__math/roots.h>
 // IWYU pragma: no_include <__math/trigonometric_functions.h>
+// IWYU pragma: no_include <SFML/System/Vector2.inl>
 
 #include <SFML/Graphics/Texture.hpp>
 #include <SFML/System/Vector2.hpp>
@@ -59,7 +60,17 @@ Scene::EntityId FootBallerId(Game::Player player, unsigned index) {
   }
 }
 
-b2Vec2 ToB2Vec(const sf::Vector2f &v) { return b2Vec2(v.x, v.y); }
+Game::Player PlayerOf(unsigned index) {
+  if (index > 0) {
+    return Game::Player::PLAYER0;
+  } else {
+    return Game::Player::PLAYER1;
+  }
+}
+
+b2Vec2 ToB2Vec(sf::Vector2f const &v) { return b2Vec2(v.x, v.y); }
+
+sf::Vector2f ToSfVec(b2Vec2 const &v) { return sf::Vector2f(v.x, v.y); }
 
 std::vector<std::pair<Configuration::SoccererType, WorldPosition>>
 ToWorldPositions(
@@ -281,13 +292,34 @@ void LoadField(Configuration const &config, Scene *scene) {
                /*boundary_index=*/5, config, scene);
 }
 
+Game::Player GoalArea(WorldPosition const &ball_pos,
+                      Configuration const &config) {
+  if (ball_pos.y < -config.FieldDimension().y / 2.f) {
+    return Game::Player::PLAYER0;
+  } else if (ball_pos.y > config.FieldDimension().y / 2.f) {
+    return Game::Player::PLAYER1;
+  } else {
+    return Game::Player::NONE;
+  }
+}
+
 } // namespace
 
-Game::Game(Scene *scene) : scene_(scene) {}
+Game::Game(Scene *scene, Game::Player offense, Configuration const *config)
+    : scene_(scene), current_state_(State::ONGOING), current_player_(offense),
+      num_rounds_(0), config_(config) {}
 
-Game::Game(Game &&other) : scene_(nullptr) { std::swap(scene_, other.scene_); }
+Game::Game(Game &&other) : scene_(nullptr), num_rounds_(0) {
+  std::swap(scene_, other.scene_);
+  std::swap(current_state_, other.current_state_);
+  std::swap(current_player_, other.current_player_);
+  std::swap(num_rounds_, other.num_rounds_);
+  std::swap(config_, other.config_);
+}
 
 void Game::Launch(Move const &move) {
+  CHECK_EQ(PlayerOf(move.id), this->CurrentPlayer());
+
   Scene::Entity soccerer = scene_->GetEntity(move.id);
 
   b2Vec2 dir(std::cos(move.angle), std::sin(move.angle));
@@ -296,22 +328,82 @@ void Game::Launch(Move const &move) {
 
   do {
     scene_->Step();
+
+    WorldPosition ball_pos = this->CurrentBall();
+    Player goal_area = GoalArea(ball_pos, *config_);
+    switch (goal_area) {
+    case Player::PLAYER0:
+      current_state_ = State::PLAYER1_GOAL;
+      break;
+    case Player::PLAYER1:
+      current_state_ = State::PLAYER0_GOAL;
+      break;
+    default:
+      break;
+    }
+    if (current_state_ != State::ONGOING) {
+      break;
+    }
   } while (!scene_->Stable(kMinStableSteps));
+
+  ++num_rounds_;
 }
 
-unsigned Game::CurrentRound() const {}
+unsigned Game::CurrentRound() const { return num_rounds_; }
 
-Game::State Game::CurrentState() const {}
+Game::State Game::CurrentState() const { return current_state_; }
 
-Game::Player Game::CurrentPlayer() const {}
+Game::Player Game::CurrentPlayer() const { return current_player_; }
 
-std::vector<Game::Soccerer> Game::CurrentSoccerers() const {}
+std::vector<Game::Soccerer> Game::CurrentSoccerers() const {
+  std::vector<Game::Soccerer> soccerers;
+  soccerers.reserve(2 * config_->TeamSize());
 
-WorldPosition Game::CurrentBall() const {}
+  Scene::EntityId player0_goal_keeper_id = GoalKeeperId(Player::PLAYER0);
+  Scene::EntityId player1_goal_keeper_id = GoalKeeperId(Player::PLAYER1);
 
-void LoadGame(Configuration const &config, Game::Player offense,
-              unsigned player_0_params_index, unsigned player_1_params_index,
-              Scene *scene) {
+  Scene::Entity player0_goal_keeper = scene_->GetEntity(player0_goal_keeper_id);
+  Scene::Entity player1_goal_keeper = scene_->GetEntity(player1_goal_keeper_id);
+  CHECK_NOTNULL(player0_goal_keeper.body);
+  CHECK_NOTNULL(player1_goal_keeper.body);
+
+  soccerers.push_back(Soccerer(
+      player0_goal_keeper_id, Player::PLAYER0, SoccererType::GoalKeeper,
+      ToSfVec(player0_goal_keeper.body->GetPosition())));
+  soccerers.push_back(Soccerer(
+      player1_goal_keeper_id, Player::PLAYER1, SoccererType::GoalKeeper,
+      ToSfVec(player1_goal_keeper.body->GetPosition())));
+
+  for (unsigned i = 0; i < config_->TeamSize() - 1; ++i) {
+    Scene::EntityId player0_baller_id = FootBallerId(Player::PLAYER0, i);
+    Scene::EntityId player1_baller_id = FootBallerId(Player::PLAYER1, i);
+
+    Scene::Entity player0_baller = scene_->GetEntity(player0_baller_id);
+    Scene::Entity player1_baller = scene_->GetEntity(player1_baller_id);
+    CHECK_NOTNULL(player0_baller.body);
+    CHECK_NOTNULL(player1_baller.body);
+
+    soccerers.push_back(Soccerer(player0_baller_id, Player::PLAYER0,
+                                 SoccererType::Baller,
+                                 ToSfVec(player0_baller.body->GetPosition())));
+    soccerers.push_back(Soccerer(player1_baller_id, Player::PLAYER1,
+                                 SoccererType::Baller,
+                                 ToSfVec(player1_baller.body->GetPosition())));
+  }
+
+  return soccerers;
+}
+
+WorldPosition Game::CurrentBall() const {
+  Scene::Entity ball = scene_->GetEntity(kBallId);
+  CHECK_NOTNULL(ball.body);
+  b2Vec2 ball_pos = ball.body->GetPosition();
+  return ToSfVec(ball_pos);
+}
+
+void LoadGameScene(Configuration const &config, Game::Player offense,
+                   unsigned player_0_params_index,
+                   unsigned player_1_params_index, Scene *scene) {
   LoadBall(config, scene);
   LoadField(config, scene);
   LoadSoccerers(Game::Player::PLAYER0, offense == Game::PLAYER0,

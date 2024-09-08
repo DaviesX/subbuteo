@@ -17,23 +17,27 @@ public:
   enum State { ONGOING, PLAYER0_GOAL, PLAYER1_GOAL };
 
   struct Soccerer {
+    Soccerer(Scene::EntityId id, Player owner, SoccererType type,
+             WorldPosition position)
+        : id(id), owner(owner), type(type), position(position) {}
+
     Scene::EntityId id;
     Player owner;
     SoccererType type;
     WorldPosition position;
   };
 
-  struct Ball {
-    WorldPosition position;
-  };
-
   struct Move {
+    Move() : id(0), angle(0), power(0) {}
+    Move(Scene::EntityId id, float angle, float power)
+        : id(id), angle(angle), power(power) {}
+
     Scene::EntityId id;
     float angle;
     float power;
   };
 
-  Game(Scene *scene);
+  Game(Scene *scene, Game::Player offense, Configuration const *config);
   Game(Game &&other);
   Game(Game const &) = delete;
 
@@ -46,10 +50,14 @@ public:
 
 private:
   Scene *scene_;
+  State current_state_;
+  Player current_player_;
+  unsigned num_rounds_;
+  Configuration const *config_;
 };
 
-void LoadGame(Configuration const &config, Game::Player offense,
-              unsigned player_0_params_index, unsigned player_1_params_index,
-              Scene *scene);
+void LoadGameScene(Configuration const &config, Game::Player offense,
+                   unsigned player_0_params_index,
+                   unsigned player_1_params_index, Scene *scene);
 
 } // namespace subbuteo
