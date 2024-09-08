@@ -8,7 +8,6 @@
 #include <memory>
 #include <ostream>
 #include <thread>
-#include <utility>
 #include <vector>
 
 #include "agent.hpp"
@@ -40,8 +39,11 @@ void DoInteractivePickOffendingPlayer(Scene *scene, Game::Player *offense) {
   *offense = Game::Player::PLAYER0;
 }
 
-void DoInteractiveMatch(Configuration const &config, Camera *camera,
-                        ControlQueue *control_queue, Scene *scene) {
+void DoInteractiveMatch(Configuration const &config,
+                        rapidjson::Document const &agent0_config,
+                        rapidjson::Document const &agent1_config,
+                        Camera *camera, ControlQueue *control_queue,
+                        Scene *scene) {
   LOG(INFO) << "Matching opponents...";
   unsigned player_0_params_index;
   unsigned player_1_params_index;
@@ -57,20 +59,25 @@ void DoInteractiveMatch(Configuration const &config, Camera *camera,
             camera, scene);
 
   LOG(INFO) << "Staring match...";
+  Game game(scene, offense, &config);
+  std::unique_ptr<AgentInterface> agent0 =
+      CreateAgent(agent0_config, control_queue);
+  std::unique_ptr<AgentInterface> agent1 =
+      CreateAgent(agent1_config, control_queue);
 }
 
 } // namespace
 
-GameFlowInterface::GameFlowInterface(std::unique_ptr<AgentInterface> &&agent0,
-                                     std::unique_ptr<AgentInterface> &&agent1)
-    : agent0_(std::move(agent0)), agent1_(std::move(agent1)) {}
+GameFlowInterface::GameFlowInterface(rapidjson::Document const &agent0_config,
+                                     rapidjson::Document const &agent1_config)
+    : agent0_config_(agent0_config), agent1_config_(agent1_config) {}
 
 GameFlowInterface::~GameFlowInterface() = default;
 
 InteractiveGameFlow::InteractiveGameFlow(
-    std::unique_ptr<AgentInterface> &&agent0,
-    std::unique_ptr<AgentInterface> &&agent1)
-    : GameFlowInterface(std::move(agent0), std::move(agent1)),
+    rapidjson::Document const &agent0_config,
+    rapidjson::Document const &agent1_config)
+    : GameFlowInterface(agent0_config, agent1_config),
       window_({kWindowWidth, kWindowHeight}, kWindowTitle),
       config_(kResourcePath), camera_(window_.getSize()),
       scene_(/*visualizable=*/true), close_event_(false) {}
@@ -88,8 +95,9 @@ int InteractiveGameFlow::Run() {
                              &close_event_, &window_);
 
   LOG(INFO) << "Launching matching thread...";
-  std::thread match_thread(DoInteractiveMatch, std::cref(config_), &camera_,
-                           &control_queue_, &scene_);
+  std::thread match_thread(DoInteractiveMatch, std::cref(config_),
+                           std::cref(agent0_config_), std::cref(agent1_config_),
+                           &camera_, &control_queue_, &scene_);
 
   LOG(INFO) << "Listening controls...";
   close_event_ = ListenControls(&window_, std::cref(camera_), &control_queue_);
@@ -109,9 +117,9 @@ int InteractiveGameFlow::Run() {
 }
 
 LogGeneratorGameFlow::LogGeneratorGameFlow(
-    std::unique_ptr<AgentInterface> &&agent0,
-    std::unique_ptr<AgentInterface> &&agent1)
-    : GameFlowInterface(std::move(agent0), std::move(agent1)) {}
+    rapidjson::Document const &agent0_config,
+    rapidjson::Document const &agent1_config)
+    : GameFlowInterface(agent0_config, agent1_config) {}
 
 LogGeneratorGameFlow::~LogGeneratorGameFlow() = default;
 

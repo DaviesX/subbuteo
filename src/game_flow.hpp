@@ -1,7 +1,7 @@
 #pragma once
 
 #include <SFML/Graphics/RenderWindow.hpp>
-#include <memory>
+#include <rapidjson/document.h>
 
 #include "camera.hpp"
 #include "config.hpp"
@@ -10,25 +10,23 @@
 
 namespace subbuteo {
 
-class AgentInterface;
-
 class GameFlowInterface {
 public:
-  GameFlowInterface(std::unique_ptr<AgentInterface> &&agent0,
-                    std::unique_ptr<AgentInterface> &&agent1);
+  GameFlowInterface(rapidjson::Document const &agent0_config,
+                    rapidjson::Document const &agent1_config);
   virtual ~GameFlowInterface();
 
   virtual int Run() = 0;
 
 protected:
-  std::unique_ptr<AgentInterface> agent0_;
-  std::unique_ptr<AgentInterface> agent1_;
+  rapidjson::Document const &agent0_config_;
+  rapidjson::Document const &agent1_config_;
 };
 
 class InteractiveGameFlow final : public GameFlowInterface {
 public:
-  InteractiveGameFlow(std::unique_ptr<AgentInterface> &&agent0,
-                      std::unique_ptr<AgentInterface> &&agent1);
+  InteractiveGameFlow(rapidjson::Document const &agent0_config,
+                      rapidjson::Document const &agent1_config);
   ~InteractiveGameFlow() override;
 
   int Run() override;
@@ -44,8 +42,8 @@ private:
 
 class LogGeneratorGameFlow final : public GameFlowInterface {
 public:
-  LogGeneratorGameFlow(std::unique_ptr<AgentInterface> &&agen0,
-                       std::unique_ptr<AgentInterface> &&agent1);
+  LogGeneratorGameFlow(rapidjson::Document const &agent0_config,
+                       rapidjson::Document const &agent1_config);
   ~LogGeneratorGameFlow() override;
 
   int Run() override;

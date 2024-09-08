@@ -7,9 +7,7 @@
 #include <rapidjson/encodings.h>
 #include <rapidjson/rapidjson.h>
 #include <string>
-#include <utility>
 
-#include "agent.hpp"
 #include "game_flow.hpp"
 
 DEFINE_bool(log_generator_mode, false,
@@ -32,19 +30,15 @@ int main(int argc, char *argv[]) {
   agent1_config.Parse<0>(FLAGS_agent_1_config.c_str());
   CHECK(!agent0_config.HasParseError());
   CHECK(!agent1_config.HasParseError());
-  std::unique_ptr<subbuteo::AgentInterface> agent0 =
-      subbuteo::CreateAgent(agent0_config);
-  std::unique_ptr<subbuteo::AgentInterface> agent1 =
-      subbuteo::CreateAgent(agent1_config);
 
   LOG(INFO) << "Creating game flow...";
   std::unique_ptr<subbuteo::GameFlowInterface> game_flow;
   if (FLAGS_match_count > 0 && FLAGS_log_generator_mode) {
-    game_flow = std::make_unique<subbuteo::LogGeneratorGameFlow>(
-        std::move(agent0), std::move(agent1));
+    game_flow = std::make_unique<subbuteo::LogGeneratorGameFlow>(agent0_config,
+                                                                 agent1_config);
   } else {
-    game_flow = std::make_unique<subbuteo::InteractiveGameFlow>(
-        std::move(agent0), std::move(agent1));
+    game_flow = std::make_unique<subbuteo::InteractiveGameFlow>(agent0_config,
+                                                                agent1_config);
   }
 
   LOG(INFO) << "Running game flow...";

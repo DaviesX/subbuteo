@@ -10,10 +10,12 @@ namespace subbuteo {
 
 class HumanAgent final : public AgentInterface {
 public:
-  explicit HumanAgent(rapidjson::Document const &config);
+  HumanAgent(rapidjson::Document const &config, ControlQueue *control_queue);
 
-  Game::Move ComputeMove(Game const &game,
-                         ControlQueue *control_queue) const override;
+  Game::Move ComputeMove(Game const &game) const override;
+
+private:
+  ControlQueue *control_queue_;
 };
 
 } // namespace subbuteo

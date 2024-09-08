@@ -37,8 +37,7 @@ void LoadMatch(Configuration const &config, Game::Player offense,
 
 Game::State RunMatch(AgentInterface const &agent0, AgentInterface const &agent1,
                      std::optional<std::filesystem::path> const &log_file_path,
-                     ControlQueue *control_queue, Game *game) {
-  CHECK_NOTNULL(control_queue);
+                     Game *game) {
   CHECK_NOTNULL(game);
 
   std::ofstream log_file;
@@ -52,11 +51,11 @@ Game::State RunMatch(AgentInterface const &agent0, AgentInterface const &agent1,
 
     switch (game->CurrentPlayer()) {
     case Game::Player::PLAYER0: {
-      move = agent0.ComputeMove(*game, control_queue);
+      move = agent0.ComputeMove(*game);
       agent_id = agent0.Id();
     }
     case Game::Player::PLAYER1: {
-      move = agent1.ComputeMove(*game, control_queue);
+      move = agent1.ComputeMove(*game);
       agent_id = agent1.Id();
     }
     default:

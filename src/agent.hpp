@@ -17,13 +17,13 @@ public:
   virtual ~AgentInterface();
 
   AgentId const &Id() const;
-  virtual Game::Move ComputeMove(Game const &game,
-                                 ControlQueue *control_queue) const = 0;
+  virtual Game::Move ComputeMove(Game const &game) const = 0;
 
 private:
   AgentId id_;
 };
 
-std::unique_ptr<AgentInterface> CreateAgent(rapidjson::Document const &config);
+std::unique_ptr<AgentInterface> CreateAgent(rapidjson::Document const &config,
+                                            ControlQueue *control_queue);
 
 } // namespace subbuteo
