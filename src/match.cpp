@@ -63,7 +63,9 @@ Game::State RunMatch(AgentInterface const &agent0, AgentInterface const &agent1,
     }
 
     LogMove(*game, move, agent_id, &log_file);
-    game->Launch(move);
+    if (!game->Launch(move)) {
+      LOG(ERROR) << "Failed to launch the move.";
+    }
   }
 
   LogResult(*game, &log_file);

@@ -195,7 +195,7 @@ void LoadBall(Configuration const &config, Scene *scene) {
 
   scene->AddEntity(
       kBallId, /*create_body_fn=*/
-      [&config, &params](b2World *world) {
+      [&params](b2World *world) {
         b2BodyDef body_def;
         body_def.type = b2_dynamicBody;
         body_def.position = b2Vec2(0, 0);
@@ -317,8 +317,12 @@ Game::Game(Game &&other) : scene_(nullptr), num_rounds_(0) {
   std::swap(config_, other.config_);
 }
 
-void Game::Launch(Move const &move) {
-  CHECK_EQ(PlayerOf(move.id), this->CurrentPlayer());
+bool Game::Launch(Move const &move) {
+  if (PlayerOf(move.id) != this->CurrentPlayer()) {
+    LOG(ERROR) << "Expected player of this turn is " << this->CurrentPlayer()
+               << " but got " << PlayerOf(move.id) << " with id " << move.id;
+    return false;
+  }
 
   Scene::Entity soccerer = scene_->GetEntity(move.id);
 
@@ -347,6 +351,7 @@ void Game::Launch(Move const &move) {
   } while (!scene_->Stable(kMinStableSteps));
 
   ++num_rounds_;
+  return true;
 }
 
 unsigned Game::CurrentRound() const { return num_rounds_; }
@@ -367,12 +372,14 @@ std::vector<Game::Soccerer> Game::CurrentSoccerers() const {
   CHECK_NOTNULL(player0_goal_keeper.body);
   CHECK_NOTNULL(player1_goal_keeper.body);
 
-  soccerers.push_back(Soccerer(
-      player0_goal_keeper_id, Player::PLAYER0, SoccererType::GoalKeeper,
-      ToSfVec(player0_goal_keeper.body->GetPosition())));
-  soccerers.push_back(Soccerer(
-      player1_goal_keeper_id, Player::PLAYER1, SoccererType::GoalKeeper,
-      ToSfVec(player1_goal_keeper.body->GetPosition())));
+  soccerers.push_back(Soccerer(player0_goal_keeper_id, Player::PLAYER0,
+                               SoccererType::GoalKeeper,
+                               ToSfVec(player0_goal_keeper.body->GetPosition()),
+                               config_->GoalKeeperPhysicsParameters().radius));
+  soccerers.push_back(Soccerer(player1_goal_keeper_id, Player::PLAYER1,
+                               SoccererType::GoalKeeper,
+                               ToSfVec(player1_goal_keeper.body->GetPosition()),
+                               config_->GoalKeeperPhysicsParameters().radius));
 
   for (unsigned i = 0; i < config_->TeamSize() - 1; ++i) {
     Scene::EntityId player0_baller_id = FootBallerId(Player::PLAYER0, i);
@@ -383,12 +390,14 @@ std::vector<Game::Soccerer> Game::CurrentSoccerers() const {
     CHECK_NOTNULL(player0_baller.body);
     CHECK_NOTNULL(player1_baller.body);
 
-    soccerers.push_back(Soccerer(player0_baller_id, Player::PLAYER0,
-                                 SoccererType::Baller,
-                                 ToSfVec(player0_baller.body->GetPosition())));
-    soccerers.push_back(Soccerer(player1_baller_id, Player::PLAYER1,
-                                 SoccererType::Baller,
-                                 ToSfVec(player1_baller.body->GetPosition())));
+    soccerers.push_back(
+        Soccerer(player0_baller_id, Player::PLAYER0, SoccererType::Baller,
+                 ToSfVec(player0_baller.body->GetPosition()),
+                 config_->FootballerPhysicsParameters().radius));
+    soccerers.push_back(
+        Soccerer(player1_baller_id, Player::PLAYER1, SoccererType::Baller,
+                 ToSfVec(player1_baller.body->GetPosition()),
+                 config_->FootballerPhysicsParameters().radius));
   }
 
   return soccerers;

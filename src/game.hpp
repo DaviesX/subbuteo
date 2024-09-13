@@ -2,6 +2,7 @@
 
 // IWYU pragma: no_include <SFML/System/Vector2.inl>
 
+#include <SFML/System/Vector2.hpp>
 #include <vector>
 
 #include "config.hpp"
@@ -18,13 +19,15 @@ public:
 
   struct Soccerer {
     Soccerer(Scene::EntityId id, Player owner, SoccererType type,
-             WorldPosition position)
-        : id(id), owner(owner), type(type), position(position) {}
+             WorldPosition position, float radius)
+        : id(id), owner(owner), type(type), position(position), radius(radius) {
+    }
 
     Scene::EntityId id;
     Player owner;
     SoccererType type;
     WorldPosition position;
+    float radius;
   };
 
   struct Move {
@@ -41,7 +44,7 @@ public:
   Game(Game &&other);
   Game(Game const &) = delete;
 
-  void Launch(Move const &move);
+  bool Launch(Move const &move);
   unsigned CurrentRound() const;
   State CurrentState() const;
   Player CurrentPlayer() const;
