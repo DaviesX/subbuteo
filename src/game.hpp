@@ -1,5 +1,6 @@
 #pragma once
 
+// IWYU pragma: no_include <__fwd/ostream.h>
 // IWYU pragma: no_include <SFML/System/Vector2.inl>
 
 #include <SFML/System/Vector2.hpp>
@@ -62,5 +63,6 @@ private:
 void LoadGameScene(Configuration const &config, Game::Player offense,
                    unsigned player_0_params_index,
                    unsigned player_1_params_index, Scene *scene);
+std::ostream &operator<<(std::ostream &stream, Game::Move const &move);
 
 } // namespace subbuteo

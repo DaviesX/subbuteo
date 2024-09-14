@@ -18,7 +18,7 @@
 namespace subbuteo {
 namespace {
 
-float const kMaxDragDistance = 2.5f;
+float const kMaxDragDistance = 5.f;
 
 std::optional<Game::Soccerer>
 SelectSoccerer(WorldPosition const &pos,
@@ -46,14 +46,16 @@ Game::Move HumanAgent::ComputeMove(Game const &game) const {
   while (!selected_soccerer.has_value() || !drag.complete) {
     drag = control_queue_->Pop();
     selected_soccerer = SelectSoccerer(drag.origin, game.CurrentSoccerers());
-    LOG(INFO) << drag;
   }
 
   sf::Vector2f arrow = selected_soccerer->position - drag.current;
   float angle = std::atan2(arrow.y, arrow.x);
   float len = std::sqrt(arrow.x * arrow.x + arrow.y * arrow.y);
   float power = std::min(len, kMaxDragDistance) / kMaxDragDistance;
-  return Game::Move(selected_soccerer->id, angle, power);
+
+  Game::Move move(selected_soccerer->id, angle, power);
+  LOG(INFO) << "Made a move " << move;
+  return move;
 }
 
 } // namespace subbuteo

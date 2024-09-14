@@ -421,4 +421,10 @@ void LoadGameScene(Configuration const &config, Game::Player offense,
                 player_1_params_index, config, scene);
 }
 
+std::ostream &operator<<(std::ostream &stream, Game::Move const &move) {
+  stream << "{id:" << move.id << ",angle:" << move.angle
+         << ",power:" << move.power << "}";
+  return stream;
+}
+
 } // namespace subbuteo
