@@ -5,7 +5,9 @@
 #include <SFML/System/Vector2.hpp>
 #include <algorithm>
 #include <cmath>
+#include <glog/logging.h>
 #include <optional>
+#include <ostream>
 #include <rapidjson/document.h>
 #include <vector>
 
@@ -37,11 +39,14 @@ HumanAgent::HumanAgent(rapidjson::Document const & /*config*/,
     : control_queue_(control_queue) {}
 
 Game::Move HumanAgent::ComputeMove(Game const &game) const {
+  LOG(INFO) << "Human agent making a move.";
+
   DragEvent drag;
   std::optional<Game::Soccerer> selected_soccerer;
   while (!selected_soccerer.has_value() || !drag.complete) {
     drag = control_queue_->Pop();
     selected_soccerer = SelectSoccerer(drag.origin, game.CurrentSoccerers());
+    LOG(INFO) << drag;
   }
 
   sf::Vector2f arrow = selected_soccerer->position - drag.current;

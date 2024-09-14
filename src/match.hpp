@@ -4,7 +4,6 @@
 #include <optional>
 
 #include "config.hpp"
-#include "control.hpp"
 #include "game.hpp"
 
 namespace subbuteo {
@@ -18,6 +17,6 @@ void LoadMatch(Configuration const &config, Game::Player offense,
                Camera *camera, Scene *scene);
 Game::State RunMatch(AgentInterface const &agent0, AgentInterface const &agent1,
                      std::optional<std::filesystem::path> const &log_file_path,
-                     ControlQueue *control_queue, Game *game);
+                     Game *game);
 
 } // namespace subbuteo

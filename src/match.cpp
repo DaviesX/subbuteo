@@ -53,10 +53,12 @@ Game::State RunMatch(AgentInterface const &agent0, AgentInterface const &agent1,
     case Game::Player::PLAYER0: {
       move = agent0.ComputeMove(*game);
       agent_id = agent0.Id();
+      break;
     }
     case Game::Player::PLAYER1: {
       move = agent1.ComputeMove(*game);
       agent_id = agent1.Id();
+      break;
     }
     default:
       CHECK(false) << "Unknown player " << game->CurrentPlayer();

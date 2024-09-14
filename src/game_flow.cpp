@@ -6,6 +6,7 @@
 #include <functional>
 #include <glog/logging.h>
 #include <memory>
+#include <optional>
 #include <ostream>
 #include <thread>
 #include <vector>
@@ -64,6 +65,9 @@ void DoInteractiveMatch(Configuration const &config,
       CreateAgent(agent0_config, control_queue);
   std::unique_ptr<AgentInterface> agent1 =
       CreateAgent(agent1_config, control_queue);
+  Game::State result =
+      RunMatch(*agent0, *agent1, /*log_file_path=*/std::nullopt, &game);
+  LOG(INFO) << "Match completed with result " << result;
 }
 
 } // namespace
