@@ -41,7 +41,8 @@ WorldPosition ComputeWorldPosition(Camera const &camera,
   float view_x =
       position.x * camera.view_dimension.x / camera.window_dimension.x;
   float view_y =
-      position.y * camera.view_dimension.y / camera.window_dimension.y;
+      (1.f - static_cast<float>(position.y) / camera.window_dimension.y) *
+      camera.view_dimension.y;
 
   sf::Vector2f view_pos(view_x, view_y);
   view_pos -= 0.5f * camera.view_dimension;
