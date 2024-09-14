@@ -1,10 +1,12 @@
 #include <box2d/b2_body.h>
 #include <box2d/b2_math.h>
 #include <box2d/b2_types.h>
+#include <chrono>
 #include <glog/logging.h>
 #include <mutex>
 #include <ostream>
 #include <stddef.h>
+#include <thread>
 #include <utility>
 
 #include "scene.hpp"
@@ -74,12 +76,15 @@ void Scene::Clear() {
 }
 
 void Scene::Step() {
+  std::unique_lock lock(mu_);
+
   physics_world_->Step(kTimeStep, kVelocityIterations, kPositionIterations);
   if (!visualizable_) {
     return;
   }
 
-  std::unique_lock lock(mu_);
+  std::this_thread::sleep_for(
+      std::chrono::milliseconds(static_cast<unsigned>(kTimeStep * 1e3f)));
 
   bool stable = true;
   for (auto &[_, entity] : entities_) {
