@@ -84,14 +84,13 @@ void Scene::Step() {
   }
 
   std::this_thread::sleep_for(
-      std::chrono::milliseconds(static_cast<unsigned>(kTimeStep * 1e3f)));
+      std::chrono::milliseconds(static_cast<unsigned>(kTimeStep * 1e3f / 2.f)));
 
   bool stable = true;
-  for (auto &[_, entity] : entities_) {
+  for (auto &[id, entity] : entities_) {
     if (entity.body != nullptr &&
         entity.body->GetLinearVelocity().Length() > kMaxStableSpeed) {
       stable = false;
-      break;
     }
 
     if (entity.body != nullptr && entity.drawable != nullptr) {

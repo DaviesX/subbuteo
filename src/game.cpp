@@ -34,7 +34,6 @@ unsigned const kBallLayer = 1;
 float const kFieldBounaryOverlap = 0.05f;
 
 unsigned const kMinStableSteps = 5;
-float const kMaxImpulse = 10;
 
 Scene::EntityId GoalKeeperId(Game::Player player) {
   switch (player) {
@@ -168,6 +167,7 @@ void LoadSoccerers(Game::Player player, bool offense,
           fixture_def.friction = params.friction;
 
           b2Body *body = world->CreateBody(&body_def);
+          body->SetLinearDamping(.2f);
           body->CreateFixture(&fixture_def);
 
           return body;
@@ -233,6 +233,7 @@ void LoadBoundary(sf::Vector2f const &start, sf::Vector2f const &stop,
         sf::Vector2f mid = 0.5f * (start + stop);
 
         b2BodyDef body_def;
+        body_def.type = b2_staticBody;
         body_def.position = ToB2Vec(mid);
 
         b2EdgeShape shape;
@@ -327,8 +328,8 @@ bool Game::Launch(Move const &move) {
   Scene::Entity soccerer = scene_->GetEntity(move.id);
 
   b2Vec2 dir(std::cos(move.angle), std::sin(move.angle));
-  b2Vec2 impulse = move.power * kMaxImpulse * dir;
-  soccerer.body->ApplyLinearImpulseToCenter(impulse, /*wake=*/true);
+  b2Vec2 force = move.power * config_->Launch().max_force * dir;
+  soccerer.body->ApplyForceToCenter(force, /*wake=*/true);
 
   do {
     scene_->Step();

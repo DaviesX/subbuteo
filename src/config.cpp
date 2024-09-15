@@ -86,12 +86,30 @@ Configuration::FieldPosition::FieldPosition(SoccererType soccerer_type,
     : soccerer_type(soccerer_type), from_left(from_left),
       from_central(from_central) {}
 
+Configuration::LaunchParameters::LaunchParameters()
+    : min_force(0), max_force(0), uncertainty_force(0), uncertainty_angle(0) {}
+
+Configuration::LaunchParameters::LaunchParameters(float min_force,
+                                                  float max_force,
+                                                  float uncertainty_force,
+                                                  float uncertainty_angle)
+    : min_force(min_force), max_force(max_force),
+      uncertainty_force(uncertainty_force),
+      uncertainty_angle(uncertainty_angle) {}
+
 Configuration::Configuration(std::filesystem::path const &resource_path) {
   CHECK(std::filesystem::exists(resource_path));
   rapidjson::Document config = ParseConfigFile(resource_path);
 
   version_ = config["version"].GetString();
   team_size_ = config["team_size"].GetInt();
+
+  rapidjson::Value launch_config = config["launch"].GetObject();
+  launch_params_ =
+      LaunchParameters(launch_config["min_force"].GetFloat(),
+                       launch_config["max_force"].GetFloat(),
+                       launch_config["uncertainty_force"].GetFloat(),
+                       launch_config["uncertainty_angle"].GetFloat());
 
   rapidjson::Value ball_config = config["ball"].GetObject();
   ball_params_ =
@@ -152,6 +170,10 @@ Configuration::~Configuration() = default;
 std::string const &Configuration::Version() const { return version_; }
 
 unsigned Configuration::TeamSize() const { return team_size_; }
+
+Configuration::LaunchParameters const &Configuration::Launch() const {
+  return launch_params_;
+}
 
 sf::Texture const &Configuration::BallTexture() const { return ball_texture_; }
 

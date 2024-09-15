@@ -35,11 +35,23 @@ public:
     float from_central;
   };
 
+  struct LaunchParameters {
+    LaunchParameters();
+    LaunchParameters(float min_force, float max_force, float uncertainty_force,
+                     float uncertainty_angle);
+
+    float min_force;
+    float max_force;
+    float uncertainty_force;
+    float uncertainty_angle;
+  };
+
   Configuration(std::filesystem::path const &resource_path);
   ~Configuration();
 
   std::string const &Version() const;
   unsigned TeamSize() const;
+  LaunchParameters const &Launch() const;
   sf::Texture const &BallTexture() const;
   sf::Vector2f const &FieldDimension() const;
   sf::Texture const &FieldTexture() const;
@@ -56,6 +68,7 @@ public:
 private:
   std::string version_;
   unsigned team_size_;
+  LaunchParameters launch_params_;
   sf::Texture ball_texture_;
   sf::Vector2f field_dimension_;
   sf::Texture field_texture_;

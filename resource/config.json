@@ -41,7 +41,7 @@
     },
     "launch": {
         "min_force": 0.0,
-        "max_force": 1.0,
+        "max_force": 5000.0,
         "uncertainty_force": 0.01,
         "uncertainty_angle": 0.01
     },
