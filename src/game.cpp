@@ -158,16 +158,16 @@ void LoadSoccerers(Game::Player player, bool offense,
           body_def.position = ToB2Vec(soccerer_pos);
 
           b2CircleShape shape;
-          shape.m_p = ToB2Vec(soccerer_pos);
           shape.m_radius = params.radius;
 
           b2FixtureDef fixture_def;
           fixture_def.shape = &shape;
           fixture_def.density = params.density;
           fixture_def.friction = params.friction;
+          fixture_def.restitution = 0.3f;
 
           b2Body *body = world->CreateBody(&body_def);
-          body->SetLinearDamping(.2f);
+          body->SetLinearDamping(.3f);
           body->CreateFixture(&fixture_def);
 
           return body;
@@ -201,15 +201,16 @@ void LoadBall(Configuration const &config, Scene *scene) {
         body_def.position = b2Vec2(0, 0);
 
         b2CircleShape shape;
-        shape.m_p = b2Vec2(0, 0);
         shape.m_radius = params.radius;
 
         b2FixtureDef fixture_def;
         fixture_def.shape = &shape;
         fixture_def.density = params.density;
         fixture_def.friction = params.friction;
+        fixture_def.restitution = 0.3f;
 
         b2Body *body = world->CreateBody(&body_def);
+        body->SetLinearDamping(.3f);
         body->CreateFixture(&fixture_def);
 
         return body;
@@ -230,22 +231,17 @@ void LoadBoundary(sf::Vector2f const &start, sf::Vector2f const &stop,
   scene->AddEntity(
       kFieldBoundaryBaseId + boundary_index, /*create_body_fn=*/
       [&start, &stop, &config](b2World *world) {
-        sf::Vector2f mid = 0.5f * (start + stop);
-
         b2BodyDef body_def;
         body_def.type = b2_staticBody;
-        body_def.position = ToB2Vec(mid);
+        body_def.position = b2Vec2(0, 0);
 
         b2EdgeShape shape;
-        sf::Vector2f dir = ComputeNormalizedDirection(start, stop);
-        sf::Vector2f pre_start = start - kFieldBounaryOverlap * dir;
-        sf::Vector2f post_stop = stop + kFieldBounaryOverlap * dir;
-        shape.SetOneSided(ToB2Vec(pre_start), ToB2Vec(start), ToB2Vec(stop),
-                          ToB2Vec(post_stop));
+        shape.SetTwoSided(ToB2Vec(start), ToB2Vec(stop));
 
         b2FixtureDef fixture_def;
         fixture_def.shape = &shape;
         fixture_def.friction = config.FieldBoundaryPhysicsParameters().friction;
+        fixture_def.restitution = 0.5f;
 
         b2Body *body = world->CreateBody(&body_def);
         body->CreateFixture(&fixture_def);
@@ -328,8 +324,8 @@ bool Game::Launch(Move const &move) {
   Scene::Entity soccerer = scene_->GetEntity(move.id);
 
   b2Vec2 dir(std::cos(move.angle), std::sin(move.angle));
-  b2Vec2 force = move.power * config_->Launch().max_force * dir;
-  soccerer.body->ApplyForceToCenter(force, /*wake=*/true);
+  b2Vec2 force = move.power * config_->Launch().max_force / 100.f * dir;
+  soccerer.body->ApplyLinearImpulseToCenter(force, /*wake=*/true);
 
   do {
     scene_->Step();
@@ -350,6 +346,7 @@ bool Game::Launch(Move const &move) {
       break;
     }
   } while (!scene_->Stable(kMinStableSteps));
+  scene_->FreezeEntities();
 
   ++num_rounds_;
   return true;

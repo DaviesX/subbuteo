@@ -38,6 +38,7 @@ public:
   void Clear();
   void Step();
   bool Stable(unsigned min_stable_steps) const;
+  void FreezeEntities();
 
 private:
   std::shared_mutex mu_;

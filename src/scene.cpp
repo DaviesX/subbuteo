@@ -18,7 +18,7 @@ size_t const kExpectedNumEntities = 20;
 float const kTimeStep = 1.f / 60.f;
 int32 const kVelocityIterations = 6;
 int32 const kPositionIterations = 2;
-float const kMaxStableSpeed = 1e-3f;
+float const kMaxStableSpeed = 1.f;
 
 } // namespace
 
@@ -111,6 +111,14 @@ void Scene::Step() {
 
 bool Scene::Stable(unsigned min_stable_steps) const {
   return num_stable_steps_ >= min_stable_steps;
+}
+
+void Scene::FreezeEntities() {
+  for (auto &[_, entity] : entities_) {
+    if (entity.body != nullptr) {
+      entity.body->SetLinearVelocity(b2Vec2(0, 0));
+    }
+  }
 }
 
 } // namespace subbuteo
