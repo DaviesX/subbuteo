@@ -84,7 +84,7 @@ void Scene::Step() {
   }
 
   std::this_thread::sleep_for(
-      std::chrono::milliseconds(static_cast<unsigned>(kTimeStep * 1e3f / 2.f)));
+      std::chrono::milliseconds(static_cast<unsigned>(kTimeStep * 1e3f)));
 
   bool stable = true;
   for (auto &[id, entity] : entities_) {

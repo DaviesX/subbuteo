@@ -37,11 +37,11 @@ public:
 
   struct LaunchParameters {
     LaunchParameters();
-    LaunchParameters(float min_force, float max_force, float uncertainty_force,
-                     float uncertainty_angle);
+    LaunchParameters(float min_impulse, float max_impulse,
+                     float uncertainty_force, float uncertainty_angle);
 
-    float min_force;
-    float max_force;
+    float min_impulse;
+    float max_impulse;
     float uncertainty_force;
     float uncertainty_angle;
   };
@@ -54,10 +54,10 @@ public:
   LaunchParameters const &Launch() const;
   sf::Texture const &BallTexture() const;
   sf::Vector2f const &FieldDimension() const;
+  float FieldLinearDamping() const;
   sf::Texture const &FieldTexture() const;
   float GoalWidth() const;
   PhysicsParameters const &BallPhysicsParameters() const;
-  PhysicsParameters const &FieldPhysicsParameters() const;
   PhysicsParameters const &FieldBoundaryPhysicsParameters() const;
   PhysicsParameters const &GoalKeeperPhysicsParameters() const;
   PhysicsParameters const &FootballerPhysicsParameters() const;
@@ -71,10 +71,10 @@ private:
   LaunchParameters launch_params_;
   sf::Texture ball_texture_;
   sf::Vector2f field_dimension_;
+  float field_linear_damping_;
   sf::Texture field_texture_;
   float goal_width_;
   PhysicsParameters ball_params_;
-  PhysicsParameters field_params_;
   PhysicsParameters field_bounary_params_;
   PhysicsParameters goal_keeper_params_;
   PhysicsParameters foot_baller_params_;

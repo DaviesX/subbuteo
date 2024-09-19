@@ -87,13 +87,14 @@ Configuration::FieldPosition::FieldPosition(SoccererType soccerer_type,
       from_central(from_central) {}
 
 Configuration::LaunchParameters::LaunchParameters()
-    : min_force(0), max_force(0), uncertainty_force(0), uncertainty_angle(0) {}
+    : min_impulse(0), max_impulse(0), uncertainty_force(0),
+      uncertainty_angle(0) {}
 
-Configuration::LaunchParameters::LaunchParameters(float min_force,
-                                                  float max_force,
+Configuration::LaunchParameters::LaunchParameters(float min_impulse,
+                                                  float max_impulse,
                                                   float uncertainty_force,
                                                   float uncertainty_angle)
-    : min_force(min_force), max_force(max_force),
+    : min_impulse(min_impulse), max_impulse(max_impulse),
       uncertainty_force(uncertainty_force),
       uncertainty_angle(uncertainty_angle) {}
 
@@ -101,16 +102,19 @@ Configuration::Configuration(std::filesystem::path const &resource_path) {
   CHECK(std::filesystem::exists(resource_path));
   rapidjson::Document config = ParseConfigFile(resource_path);
 
+  LOG(INFO) << "Loading game configurations...";
   version_ = config["version"].GetString();
   team_size_ = config["team_size"].GetInt();
 
+  LOG(INFO) << "Loading launch configurations...";
   rapidjson::Value launch_config = config["launch"].GetObject();
   launch_params_ =
-      LaunchParameters(launch_config["min_force"].GetFloat(),
-                       launch_config["max_force"].GetFloat(),
+      LaunchParameters(launch_config["min_impulse"].GetFloat(),
+                       launch_config["max_impulse"].GetFloat(),
                        launch_config["uncertainty_force"].GetFloat(),
                        launch_config["uncertainty_angle"].GetFloat());
 
+  LOG(INFO) << "Loading ball configurations...";
   rapidjson::Value ball_config = config["ball"].GetObject();
   ball_params_ =
       PhysicsParameters(/*radius=*/ball_config["radius"].GetFloat(),
@@ -121,21 +125,22 @@ Configuration::Configuration(std::filesystem::path const &resource_path) {
       (resource_path / ball_config["file"].GetString()).string()));
   ball_texture_ = std::move(ball_texture);
 
+  LOG(INFO) << "Loading field configurations...";
   rapidjson::Value field_config = config["field"].GetObject();
   field_dimension_ = sf::Vector2f(field_config["width"].GetFloat(),
                                   field_config["length"].GetFloat());
-  field_params_ =
-      PhysicsParameters(/*radius=*/0, /*density=*/0,
-                        /*friction=*/field_config["floor_friction"].GetFloat());
+  field_linear_damping_ = field_config["linear_damping"].GetFloat();
   field_bounary_params_ = PhysicsParameters(
       /*radius=*/0, /*density=*/0,
       /*friction=*/field_config["boundary_friction"].GetFloat());
   CHECK(field_texture_.loadFromFile(
       (resource_path / field_config["file"].GetString()).string()));
 
+  LOG(INFO) << "Loading goal configurations...";
   rapidjson::Value goal_config = config["goal"].GetObject();
   goal_width_ = goal_config["width"].GetFloat();
 
+  LOG(INFO) << "Loading soccerers configurations...";
   rapidjson::Value goal_keeper_config = config["goal_keeper"].GetObject();
   goal_keeper_params_ =
       PhysicsParameters(goal_keeper_config["radius"].GetFloat(),
@@ -161,6 +166,7 @@ Configuration::Configuration(std::filesystem::path const &resource_path) {
     available_soccerer_textures_.push_back(std::move(soccerer_texture));
   }
 
+  LOG(INFO) << "Loading positioning configurations...";
   offense_positions_ = ToFieldPositions(config["offense_positions"].GetArray());
   defense_positions_ = ToFieldPositions(config["defense_positions"].GetArray());
 }
@@ -181,6 +187,10 @@ sf::Vector2f const &Configuration::FieldDimension() const {
   return field_dimension_;
 }
 
+float Configuration::FieldLinearDamping() const {
+  return field_linear_damping_;
+}
+
 sf::Texture const &Configuration::FieldTexture() const {
   return field_texture_;
 }
@@ -190,11 +200,6 @@ float Configuration::GoalWidth() const { return goal_width_; }
 Configuration::PhysicsParameters const &
 Configuration::BallPhysicsParameters() const {
   return ball_params_;
-}
-
-Configuration::PhysicsParameters const &
-Configuration::FieldPhysicsParameters() const {
-  return field_params_;
 }
 
 Configuration::PhysicsParameters const &

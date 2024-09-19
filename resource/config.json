@@ -13,14 +13,14 @@
     "ball": {
         "radius": 0.7,
         "density": 0.1,
-        "friction": 0.1,
+        "friction": 0.5,
         "file": "ball.png"
     },
     "field": {
         "width": 45.0,
         "length": 60.0,
-        "floor_friction": 0.1,
-        "boundary_friction": 0.3,
+        "linear_damping": 0.3,
+        "boundary_friction": 0.7,
         "file": "soccer_field.png"
     },
     "goal": {
@@ -29,19 +29,19 @@
     },
     "goal_keeper": {
         "radius": 1.75,
-        "density": 1.0,
-        "friction": 0.1,
+        "density": 5.0,
+        "friction": 0.5,
         "file_glob": "soccerer_.+.png"
     },
     "foot_baller": {
         "radius": 1.25,
         "density": 1.0,
-        "friction": 0.1,
+        "friction": 0.5,
         "file_glob": "soccerer_.+.png"
     },
     "launch": {
-        "min_force": 0.0,
-        "max_force": 10000.0,
+        "min_impulse": 0.0,
+        "max_impulse": 100.0,
         "uncertainty_force": 0.01,
         "uncertainty_angle": 0.01
     },

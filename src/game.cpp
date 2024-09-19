@@ -33,7 +33,7 @@ unsigned const kBallLayer = 1;
 
 float const kFieldBounaryOverlap = 0.05f;
 
-unsigned const kMinStableSteps = 8;
+unsigned const kMinStableSteps = 4;
 
 Scene::EntityId GoalKeeperId(Game::Player player) {
   switch (player) {
@@ -152,7 +152,8 @@ void LoadSoccerers(Game::Player player, bool offense,
     scene->AddEntity(
         id,
         /*create_body_fn=*/
-        [&soccerer_pos = soccerer_pos, &params](b2World *world) {
+        [&soccerer_pos = soccerer_pos, &params,
+         linear_damping = config.FieldLinearDamping()](b2World *world) {
           b2BodyDef body_def;
           body_def.type = b2_dynamicBody;
           body_def.position = ToB2Vec(soccerer_pos);
@@ -167,7 +168,7 @@ void LoadSoccerers(Game::Player player, bool offense,
           fixture_def.restitution = 0.3f;
 
           b2Body *body = world->CreateBody(&body_def);
-          body->SetLinearDamping(.3f);
+          body->SetLinearDamping(linear_damping);
           body->CreateFixture(&fixture_def);
 
           return body;
@@ -192,10 +193,11 @@ sf::Vector2f ComputeNormalizedDirection(sf::Vector2f const &start,
 void LoadBall(Configuration const &config, Scene *scene) {
   Configuration::PhysicsParameters const &params =
       config.BallPhysicsParameters();
+  float field_linear_damping = config.FieldLinearDamping();
 
   scene->AddEntity(
       kBallId, /*create_body_fn=*/
-      [&params](b2World *world) {
+      [&params, field_linear_damping](b2World *world) {
         b2BodyDef body_def;
         body_def.type = b2_dynamicBody;
         body_def.position = b2Vec2(0, 0);
@@ -210,7 +212,7 @@ void LoadBall(Configuration const &config, Scene *scene) {
         fixture_def.restitution = 0.3f;
 
         b2Body *body = world->CreateBody(&body_def);
-        body->SetLinearDamping(.3f);
+        body->SetLinearDamping(field_linear_damping);
         body->CreateFixture(&fixture_def);
 
         return body;
@@ -324,8 +326,10 @@ bool Game::Launch(Move const &move) {
   Scene::Entity soccerer = scene_->GetEntity(move.id);
 
   b2Vec2 dir(std::cos(move.angle), std::sin(move.angle));
-  b2Vec2 force = move.power * config_->Launch().max_force / 100.f * dir;
-  soccerer.body->ApplyLinearImpulseToCenter(force, /*wake=*/true);
+  float impulse_scale = config_->Launch().min_impulse +
+                        move.power * config_->Launch().max_impulse;
+  b2Vec2 impulse = impulse_scale * dir;
+  soccerer.body->ApplyLinearImpulseToCenter(impulse, /*wake=*/true);
 
   do {
     scene_->Step();
