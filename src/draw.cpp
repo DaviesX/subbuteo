@@ -58,10 +58,9 @@ void DrawScene(Scene const &scene, Camera const &camera,
       sf::Vector2f scale = ComputeWindowScale(camera, drawable->dimension,
                                               drawable->texture.getSize());
       sf::Vector2f center = ComputeWindowPosition(camera, drawable->position);
-      sf::Vector2f top_left_pos(
-          center.x - 0.5f * scale.x * drawable->texture.getSize().x,
-          center.y - 0.5f * scale.y * drawable->texture.getSize().y);
-      sprite.setPosition(top_left_pos);
+      sprite.setOrigin(drawable->texture.getSize().x / 2.f,
+                       drawable->texture.getSize().y / 2.f);
+      sprite.setPosition(center);
       sprite.setScale(scale);
       sprite.setRotation(drawable->angle);
       window->draw(sprite);

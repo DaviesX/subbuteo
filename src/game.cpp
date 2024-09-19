@@ -33,7 +33,7 @@ unsigned const kBallLayer = 1;
 
 float const kFieldBounaryOverlap = 0.05f;
 
-unsigned const kMinStableSteps = 5;
+unsigned const kMinStableSteps = 8;
 
 Scene::EntityId GoalKeeperId(Game::Player player) {
   switch (player) {
