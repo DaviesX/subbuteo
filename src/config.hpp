@@ -51,6 +51,7 @@ public:
 
   std::string const &Version() const;
   unsigned TeamSize() const;
+  sf::Texture const &ScoreBoardTexture() const;
   LaunchParameters const &Launch() const;
   sf::Texture const &BallTexture() const;
   sf::Vector2f const &FieldDimension() const;
@@ -68,6 +69,7 @@ public:
 private:
   std::string version_;
   unsigned team_size_;
+  sf::Texture score_board_texture_;
   LaunchParameters launch_params_;
   sf::Texture ball_texture_;
   sf::Vector2f field_dimension_;

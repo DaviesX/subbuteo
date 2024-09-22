@@ -114,16 +114,19 @@ Configuration::Configuration(std::filesystem::path const &resource_path) {
                        launch_config["uncertainty_force"].GetFloat(),
                        launch_config["uncertainty_angle"].GetFloat());
 
+  LOG(INFO) << "Loading scoreboard configuration...";
+  rapidjson::Value score_board_config = config["score_board"].GetObject();
+  CHECK(score_board_texture_.loadFromFile(
+      (resource_path / score_board_config["file"].GetString()).string()));
+
   LOG(INFO) << "Loading ball configurations...";
   rapidjson::Value ball_config = config["ball"].GetObject();
   ball_params_ =
       PhysicsParameters(/*radius=*/ball_config["radius"].GetFloat(),
                         /*density=*/ball_config["density"].GetFloat(),
                         /*friction=*/ball_config["friction"].GetFloat());
-  sf::Texture ball_texture;
-  CHECK(ball_texture.loadFromFile(
+  CHECK(ball_texture_.loadFromFile(
       (resource_path / ball_config["file"].GetString()).string()));
-  ball_texture_ = std::move(ball_texture);
 
   LOG(INFO) << "Loading field configurations...";
   rapidjson::Value field_config = config["field"].GetObject();
@@ -176,6 +179,10 @@ Configuration::~Configuration() = default;
 std::string const &Configuration::Version() const { return version_; }
 
 unsigned Configuration::TeamSize() const { return team_size_; }
+
+sf::Texture const &Configuration::ScoreBoardTexture() const {
+  return score_board_texture_;
+}
 
 Configuration::LaunchParameters const &Configuration::Launch() const {
   return launch_params_;

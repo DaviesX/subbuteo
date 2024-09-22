@@ -16,6 +16,9 @@
         "friction": 0.5,
         "file": "ball.png"
     },
+    "score_board": {
+        "file": "score_board.png"
+    },
     "field": {
         "width": 45.0,
         "length": 60.0,
