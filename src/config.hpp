@@ -57,7 +57,7 @@ public:
   sf::Vector2f const &FieldDimension() const;
   float FieldLinearDamping() const;
   sf::Texture const &FieldTexture() const;
-  float GoalWidth() const;
+  sf::Vector2f const &GoalDimension() const;
   PhysicsParameters const &BallPhysicsParameters() const;
   PhysicsParameters const &FieldBoundaryPhysicsParameters() const;
   PhysicsParameters const &GoalKeeperPhysicsParameters() const;
@@ -75,7 +75,7 @@ private:
   sf::Vector2f field_dimension_;
   float field_linear_damping_;
   sf::Texture field_texture_;
-  float goal_width_;
+  sf::Vector2f goal_dimension_;
   PhysicsParameters ball_params_;
   PhysicsParameters field_bounary_params_;
   PhysicsParameters goal_keeper_params_;

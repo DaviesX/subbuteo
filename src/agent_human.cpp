@@ -48,7 +48,7 @@ Game::Move HumanAgent::ComputeMove(Game const &game) const {
     selected_soccerer = SelectSoccerer(drag.origin, game.CurrentSoccerers());
   }
 
-  sf::Vector2f arrow = selected_soccerer->position - drag.current;
+  sf::Vector2f arrow = drag.current - selected_soccerer->position;
   float angle = std::atan2(arrow.y, arrow.x);
   float len = std::sqrt(arrow.x * arrow.x + arrow.y * arrow.y);
   float power = std::min(len, kMaxDragDistance) / kMaxDragDistance;

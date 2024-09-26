@@ -20,7 +20,7 @@
 namespace subbuteo {
 namespace {
 
-unsigned const kScoreboardLayer = 100;
+unsigned const kScoreboardLayer = 0;
 Scene::EntityId const kScoreBoardId = 74198;
 float const kScoreBoardHeight = 9;
 

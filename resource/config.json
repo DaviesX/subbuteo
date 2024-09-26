@@ -16,9 +16,6 @@
         "friction": 0.5,
         "file": "ball.png"
     },
-    "score_board": {
-        "file": "score_board.png"
-    },
     "field": {
         "width": 45.0,
         "length": 60.0,
@@ -27,8 +24,8 @@
         "file": "soccer_field.png"
     },
     "goal": {
-        "width": 7.32,
-        "height": 2.44
+        "width": 10.0,
+        "depth": 1.5
     },
     "goal_keeper": {
         "radius": 1.75,
@@ -44,7 +41,7 @@
     },
     "launch": {
         "min_impulse": 0.0,
-        "max_impulse": 100.0,
+        "max_impulse": 200.0,
         "uncertainty_force": 0.01,
         "uncertainty_angle": 0.01
     },

@@ -263,7 +263,7 @@ void LoadField(Configuration const &config, Scene *scene) {
                    });
 
   sf::Vector2f const &dimension = config.FieldDimension();
-  float goal_width = config.GoalWidth();
+  sf::Vector2f const &goal_dimension = config.GoalDimension();
 
   // Left boundary.
   LoadBoundary(/*start=*/sf::Vector2f(-dimension.x / 2.f, -dimension.y / 2.f),
@@ -274,21 +274,40 @@ void LoadField(Configuration const &config, Scene *scene) {
                /*stop=*/sf::Vector2f(dimension.x / 2.f, -dimension.y / 2.f),
                /*boundary_index=*/1, config, scene);
   // Bottom left bounary.
-  LoadBoundary(/*start=*/sf::Vector2f(-goal_width / 2.f, -dimension.y / 2.f),
-               /*stop=*/sf::Vector2f(-dimension.x / 2.f, -dimension.y / 2.f),
-               /*boundary_index=*/2, config, scene);
+  LoadBoundary(
+      /*start=*/sf::Vector2f(-goal_dimension.x / 2.f, -dimension.y / 2.f),
+      /*stop=*/sf::Vector2f(-dimension.x / 2.f, -dimension.y / 2.f),
+      /*boundary_index=*/2, config, scene);
   // Bottom right bounary.
-  LoadBoundary(/*start=*/sf::Vector2f(dimension.x / 2.f, -dimension.y / 2.f),
-               /*stop=*/sf::Vector2f(goal_width / 2.f, -dimension.y / 2.f),
-               /*boundary_index=*/3, config, scene);
+  LoadBoundary(
+      /*start=*/sf::Vector2f(dimension.x / 2.f, -dimension.y / 2.f),
+      /*stop=*/sf::Vector2f(goal_dimension.x / 2.f, -dimension.y / 2.f),
+      /*boundary_index=*/3, config, scene);
+  // Bottom goal boundary.
+  LoadBoundary(
+      /*start=*/sf::Vector2f(-goal_dimension.x / 2.f,
+                             -dimension.y / 2.f - goal_dimension.y),
+      /*stop=*/
+      sf::Vector2f(goal_dimension.x / 2.f,
+                   -dimension.y / 2.f - goal_dimension.y),
+      /*boundary_index=*/4, config, scene);
   // Top left bounary.
-  LoadBoundary(/*start=*/sf::Vector2f(-goal_width / 2.f, dimension.y / 2.f),
-               /*stop=*/sf::Vector2f(-dimension.x / 2.f, dimension.y / 2.f),
-               /*boundary_index=*/4, config, scene);
+  LoadBoundary(
+      /*start=*/sf::Vector2f(-goal_dimension.x / 2.f, dimension.y / 2.f),
+      /*stop=*/sf::Vector2f(-dimension.x / 2.f, dimension.y / 2.f),
+      /*boundary_index=*/5, config, scene);
   // Top right bounary.
   LoadBoundary(/*start=*/sf::Vector2f(dimension.x / 2.f, dimension.y / 2.f),
-               /*stop=*/sf::Vector2f(goal_width / 2.f, dimension.y / 2.f),
-               /*boundary_index=*/5, config, scene);
+               /*stop=*/sf::Vector2f(goal_dimension.x / 2.f, dimension.y / 2.f),
+               /*boundary_index=*/6, config, scene);
+  // Top goal boundary.
+  LoadBoundary(
+      /*start=*/sf::Vector2f(-goal_dimension.x / 2.f,
+                             dimension.y / 2.f + goal_dimension.y),
+      /*stop=*/
+      sf::Vector2f(goal_dimension.x / 2.f,
+                   dimension.y / 2.f + goal_dimension.y),
+      /*boundary_index=*/7, config, scene);
 }
 
 Game::Player GoalArea(WorldPosition const &ball_pos,

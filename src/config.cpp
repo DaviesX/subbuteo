@@ -141,7 +141,8 @@ Configuration::Configuration(std::filesystem::path const &resource_path) {
 
   LOG(INFO) << "Loading goal configurations...";
   rapidjson::Value goal_config = config["goal"].GetObject();
-  goal_width_ = goal_config["width"].GetFloat();
+  goal_dimension_ = sf::Vector2f(goal_config["width"].GetFloat(),
+                                 goal_config["depth"].GetFloat());
 
   LOG(INFO) << "Loading soccerers configurations...";
   rapidjson::Value goal_keeper_config = config["goal_keeper"].GetObject();
@@ -202,7 +203,9 @@ sf::Texture const &Configuration::FieldTexture() const {
   return field_texture_;
 }
 
-float Configuration::GoalWidth() const { return goal_width_; }
+sf::Vector2f const &Configuration::GoalDimension() const {
+  return goal_dimension_;
+}
 
 Configuration::PhysicsParameters const &
 Configuration::BallPhysicsParameters() const {
