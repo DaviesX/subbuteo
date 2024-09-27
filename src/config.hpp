@@ -46,6 +46,19 @@ public:
     float uncertainty_angle;
   };
 
+  struct FieldParameters {
+    FieldParameters();
+    FieldParameters(sf::Vector2f const &dimension, float floor_damping,
+                    float floor_decelaration, float boundary_friction,
+                    sf::Texture &&texture);
+
+    sf::Vector2f dimension;
+    float floor_damping;
+    float floor_decelaration;
+    float boundary_friction;
+    sf::Texture texture;
+  };
+
   Configuration(std::filesystem::path const &resource_path);
   ~Configuration();
 
@@ -53,13 +66,10 @@ public:
   unsigned TeamSize() const;
   sf::Texture const &ScoreBoardTexture() const;
   LaunchParameters const &Launch() const;
+  FieldParameters const &Field() const;
   sf::Texture const &BallTexture() const;
-  sf::Vector2f const &FieldDimension() const;
-  float FieldLinearDamping() const;
-  sf::Texture const &FieldTexture() const;
   sf::Vector2f const &GoalDimension() const;
   PhysicsParameters const &BallPhysicsParameters() const;
-  PhysicsParameters const &FieldBoundaryPhysicsParameters() const;
   PhysicsParameters const &GoalKeeperPhysicsParameters() const;
   PhysicsParameters const &FootballerPhysicsParameters() const;
   std::vector<FieldPosition> const &DefensePositions() const;
@@ -71,13 +81,10 @@ private:
   unsigned team_size_;
   sf::Texture score_board_texture_;
   LaunchParameters launch_params_;
+  FieldParameters field_params_;
   sf::Texture ball_texture_;
-  sf::Vector2f field_dimension_;
-  float field_linear_damping_;
-  sf::Texture field_texture_;
   sf::Vector2f goal_dimension_;
   PhysicsParameters ball_params_;
-  PhysicsParameters field_bounary_params_;
   PhysicsParameters goal_keeper_params_;
   PhysicsParameters foot_baller_params_;
   std::vector<FieldPosition> defense_positions_;

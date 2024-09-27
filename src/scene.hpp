@@ -36,9 +36,9 @@ public:
   Entity GetEntity(EntityId id) const;
   std::unordered_map<EntityId, Entity> Entities() const;
   void Clear();
+  void SetDeceleration(float deceleration);
   void Step();
   bool Stable(unsigned min_stable_steps) const;
-  void FreezeEntities();
 
 private:
   std::shared_mutex mu_;
@@ -46,6 +46,7 @@ private:
   std::unordered_map<EntityId, Entity> entities_;
   std::unique_ptr<b2World> physics_world_;
   std::unique_ptr<DrawableWorld> drawable_world_;
+  float deceleration_;
   unsigned num_stable_steps_;
 };
 

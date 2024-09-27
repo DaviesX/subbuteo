@@ -19,7 +19,8 @@
     "field": {
         "width": 45.0,
         "length": 60.0,
-        "linear_damping": 0.3,
+        "floor_damping": 0.0,
+        "floor_deceleration": 0.2,
         "boundary_friction": 0.7,
         "file": "soccer_field.png"
     },
@@ -29,7 +30,7 @@
     },
     "goal_keeper": {
         "radius": 1.75,
-        "density": 5.0,
+        "density": 1.2,
         "friction": 0.5,
         "file_glob": "soccerer_.+.png"
     },
@@ -41,7 +42,7 @@
     },
     "launch": {
         "min_impulse": 0.0,
-        "max_impulse": 200.0,
+        "max_impulse": 80.0,
         "uncertainty_force": 0.01,
         "uncertainty_angle": 0.01
     },

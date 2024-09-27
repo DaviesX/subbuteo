@@ -98,6 +98,19 @@ Configuration::LaunchParameters::LaunchParameters(float min_impulse,
       uncertainty_force(uncertainty_force),
       uncertainty_angle(uncertainty_angle) {}
 
+Configuration::FieldParameters::FieldParameters()
+    : dimension(0, 0), floor_damping(0), floor_decelaration(0),
+      boundary_friction(0) {}
+
+Configuration::FieldParameters::FieldParameters(sf::Vector2f const &dimension,
+                                                float floor_damping,
+                                                float floor_decelaration,
+                                                float boundary_friction,
+                                                sf::Texture &&texture)
+    : dimension(dimension), floor_damping(floor_damping),
+      floor_decelaration(floor_decelaration),
+      boundary_friction(boundary_friction), texture(std::move(texture)) {}
+
 Configuration::Configuration(std::filesystem::path const &resource_path) {
   CHECK(std::filesystem::exists(resource_path));
   rapidjson::Document config = ParseConfigFile(resource_path);
@@ -130,14 +143,15 @@ Configuration::Configuration(std::filesystem::path const &resource_path) {
 
   LOG(INFO) << "Loading field configurations...";
   rapidjson::Value field_config = config["field"].GetObject();
-  field_dimension_ = sf::Vector2f(field_config["width"].GetFloat(),
-                                  field_config["length"].GetFloat());
-  field_linear_damping_ = field_config["linear_damping"].GetFloat();
-  field_bounary_params_ = PhysicsParameters(
-      /*radius=*/0, /*density=*/0,
-      /*friction=*/field_config["boundary_friction"].GetFloat());
-  CHECK(field_texture_.loadFromFile(
+  sf::Texture field_texture;
+  CHECK(field_texture.loadFromFile(
       (resource_path / field_config["file"].GetString()).string()));
+  field_params_ = FieldParameters(
+      sf::Vector2f(field_config["width"].GetFloat(),
+                   field_config["length"].GetFloat()),
+      field_config["floor_damping"].GetFloat(),
+      field_config["floor_deceleration"].GetFloat(),
+      field_config["boundary_friction"].GetFloat(), std::move(field_texture));
 
   LOG(INFO) << "Loading goal configurations...";
   rapidjson::Value goal_config = config["goal"].GetObject();
@@ -189,19 +203,11 @@ Configuration::LaunchParameters const &Configuration::Launch() const {
   return launch_params_;
 }
 
+Configuration::FieldParameters const &Configuration::Field() const {
+  return field_params_;
+}
+
 sf::Texture const &Configuration::BallTexture() const { return ball_texture_; }
-
-sf::Vector2f const &Configuration::FieldDimension() const {
-  return field_dimension_;
-}
-
-float Configuration::FieldLinearDamping() const {
-  return field_linear_damping_;
-}
-
-sf::Texture const &Configuration::FieldTexture() const {
-  return field_texture_;
-}
 
 sf::Vector2f const &Configuration::GoalDimension() const {
   return goal_dimension_;
@@ -210,11 +216,6 @@ sf::Vector2f const &Configuration::GoalDimension() const {
 Configuration::PhysicsParameters const &
 Configuration::BallPhysicsParameters() const {
   return ball_params_;
-}
-
-Configuration::PhysicsParameters const &
-Configuration::FieldBoundaryPhysicsParameters() const {
-  return field_bounary_params_;
 }
 
 Configuration::PhysicsParameters const &

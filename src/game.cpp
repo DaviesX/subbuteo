@@ -108,10 +108,10 @@ void LoadSoccerers(Game::Player player, bool offense,
   soccerer_positions.reserve(config.TeamSize());
   if (offense) {
     soccerer_positions = ToWorldPositions(config.OffensePositions(),
-                                          config.FieldDimension(), player);
+                                          config.Field().dimension, player);
   } else {
     soccerer_positions = ToWorldPositions(config.DefensePositions(),
-                                          config.FieldDimension(), player);
+                                          config.Field().dimension, player);
   }
 
   CHECK_LT(player_params_index, config.AvailableSoccererTextures().size());
@@ -153,7 +153,7 @@ void LoadSoccerers(Game::Player player, bool offense,
         id,
         /*create_body_fn=*/
         [&soccerer_pos = soccerer_pos, &params,
-         linear_damping = config.FieldLinearDamping()](b2World *world) {
+         linear_damping = config.Field().floor_damping](b2World *world) {
           b2BodyDef body_def;
           body_def.type = b2_dynamicBody;
           body_def.position = ToB2Vec(soccerer_pos);
@@ -193,11 +193,10 @@ sf::Vector2f ComputeNormalizedDirection(sf::Vector2f const &start,
 void LoadBall(Configuration const &config, Scene *scene) {
   Configuration::PhysicsParameters const &params =
       config.BallPhysicsParameters();
-  float field_linear_damping = config.FieldLinearDamping();
 
   scene->AddEntity(
       kBallId, /*create_body_fn=*/
-      [&params, field_linear_damping](b2World *world) {
+      [&params, field_damping = config.Field().floor_damping](b2World *world) {
         b2BodyDef body_def;
         body_def.type = b2_dynamicBody;
         body_def.position = b2Vec2(0, 0);
@@ -212,7 +211,7 @@ void LoadBall(Configuration const &config, Scene *scene) {
         fixture_def.restitution = 0.3f;
 
         b2Body *body = world->CreateBody(&body_def);
-        body->SetLinearDamping(field_linear_damping);
+        body->SetLinearDamping(field_damping);
         body->CreateFixture(&fixture_def);
 
         return body;
@@ -242,8 +241,8 @@ void LoadBoundary(sf::Vector2f const &start, sf::Vector2f const &stop,
 
         b2FixtureDef fixture_def;
         fixture_def.shape = &shape;
-        fixture_def.friction = config.FieldBoundaryPhysicsParameters().friction;
-        fixture_def.restitution = 0.5f;
+        fixture_def.friction = config.Field().boundary_friction;
+        fixture_def.restitution = .8f;
 
         b2Body *body = world->CreateBody(&body_def);
         body->CreateFixture(&fixture_def);
@@ -257,12 +256,12 @@ void LoadField(Configuration const &config, Scene *scene) {
   scene->AddEntity(kFieldId, /*create_body_fn=*/nullptr,
                    /*create_drawable_fn=*/[&config](DrawableWorld *world) {
                      return world->CreateDrawable(
-                         /*position=*/sf::Vector2f(), config.FieldDimension(),
+                         /*position=*/sf::Vector2f(), config.Field().dimension,
                          kFieldLayer,
-                         /*angle=*/0, config.FieldTexture());
+                         /*angle=*/0, config.Field().texture);
                    });
 
-  sf::Vector2f const &dimension = config.FieldDimension();
+  sf::Vector2f const &dimension = config.Field().dimension;
   sf::Vector2f const &goal_dimension = config.GoalDimension();
 
   // Left boundary.
@@ -312,9 +311,9 @@ void LoadField(Configuration const &config, Scene *scene) {
 
 Game::Player GoalArea(WorldPosition const &ball_pos,
                       Configuration const &config) {
-  if (ball_pos.y < -config.FieldDimension().y / 2.f) {
+  if (ball_pos.y < -config.Field().dimension.y / 2.f) {
     return Game::Player::PLAYER0;
-  } else if (ball_pos.y > config.FieldDimension().y / 2.f) {
+  } else if (ball_pos.y > config.Field().dimension.y / 2.f) {
     return Game::Player::PLAYER1;
   } else {
     return Game::Player::NONE;
@@ -369,7 +368,6 @@ bool Game::Launch(Move const &move) {
       break;
     }
   } while (!scene_->Stable(kMinStableSteps));
-  scene_->FreezeEntities();
 
   ++num_rounds_;
   return true;
@@ -434,6 +432,7 @@ WorldPosition Game::CurrentBall() const {
 void LoadGameScene(Configuration const &config, Game::Player offense,
                    unsigned player_0_params_index,
                    unsigned player_1_params_index, Scene *scene) {
+  scene->SetDeceleration(config.Field().floor_decelaration);
   LoadBall(config, scene);
   LoadField(config, scene);
   LoadSoccerers(Game::Player::PLAYER0, offense == Game::PLAYER0,

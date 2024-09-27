@@ -34,17 +34,17 @@ void LoadMatch(Configuration const &config, Game::Player offense,
 
   camera->center.x = 0;
   camera->center.y = kScoreBoardHeight / 2;
-  camera->view_dimension.x = config.FieldDimension().x;
-  camera->view_dimension.y = config.FieldDimension().y + kScoreBoardHeight;
+  camera->view_dimension.x = config.Field().dimension.x;
+  camera->view_dimension.y = config.Field().dimension.y + kScoreBoardHeight;
 
   scene->AddEntity(
       /*id=*/kScoreBoardId,
       /*create_body_fn=*/nullptr,
       /*create_drawable_fn=*/[&config](DrawableWorld *world) {
         return world->CreateDrawable(
-            WorldPosition(0, config.FieldDimension().y / 2.f +
+            WorldPosition(0, config.Field().dimension.y / 2.f +
                                  kScoreBoardHeight / 2.f),
-            sf::Vector2f(config.FieldDimension().x, kScoreBoardHeight),
+            sf::Vector2f(config.Field().dimension.x, kScoreBoardHeight),
             kScoreboardLayer,
             /*angle=*/0.f, config.ScoreBoardTexture());
       });

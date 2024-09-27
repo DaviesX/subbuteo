@@ -18,7 +18,7 @@ size_t const kExpectedNumEntities = 20;
 float const kTimeStep = 1.f / 60.f;
 int32 const kVelocityIterations = 6;
 int32 const kPositionIterations = 2;
-float const kMaxStableSpeed = 1.f;
+float const kMaxStableSpeed = .1f;
 
 } // namespace
 
@@ -75,6 +75,11 @@ void Scene::Clear() {
   entities_.clear();
 }
 
+void Scene::SetDeceleration(float deceleration) {
+  CHECK_GE(deceleration, 0);
+  deceleration_ = deceleration;
+}
+
 void Scene::Step() {
   std::unique_lock lock(mu_);
 
@@ -88,12 +93,20 @@ void Scene::Step() {
 
   bool stable = true;
   for (auto &[id, entity] : entities_) {
-    if (entity.body != nullptr &&
-        entity.body->GetLinearVelocity().Length() > kMaxStableSpeed) {
-      stable = false;
+    if (entity.body == nullptr) {
+      continue;
     }
 
-    if (entity.body != nullptr && entity.drawable != nullptr) {
+    if (entity.body->GetLinearVelocity().Length() >
+        kMaxStableSpeed + deceleration_) {
+      b2Vec2 const &v = entity.body->GetLinearVelocity();
+      entity.body->SetLinearVelocity((1.f - deceleration_ / v.Length()) * v);
+      stable = false;
+    } else {
+      entity.body->SetLinearVelocity(b2Vec2(0, 0));
+    }
+
+    if (entity.drawable != nullptr) {
       b2Vec2 pos = entity.body->GetPosition();
       float angle = entity.body->GetAngle();
       entity.drawable->position.x = pos.x;
@@ -111,14 +124,6 @@ void Scene::Step() {
 
 bool Scene::Stable(unsigned min_stable_steps) const {
   return num_stable_steps_ >= min_stable_steps;
-}
-
-void Scene::FreezeEntities() {
-  for (auto &[_, entity] : entities_) {
-    if (entity.body != nullptr) {
-      entity.body->SetLinearVelocity(b2Vec2(0, 0));
-    }
-  }
 }
 
 } // namespace subbuteo
